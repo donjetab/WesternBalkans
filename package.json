@@ -1,0 +1,10 @@
+{
+  "name": "edu4migration-platform",
+  "private": true,
+  "scripts": {
+    "dev": "npm.cmd --prefix frontend run dev",
+    "build": "npm.cmd --prefix frontend run build",
+    "preview": "npm.cmd --prefix frontend run preview",
+    "api": "dotnet run --project backend/Edu4Migration.Api.csproj"
+  }
+}
