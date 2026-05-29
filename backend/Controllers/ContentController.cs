@@ -74,6 +74,8 @@ public class ContentController(AppDbContext db) : ControllerBase
         {
             Title = section.Title,
             Body = section.Body,
+            DocumentTitle = section.DocumentTitle,
+            DocumentUrl = section.DocumentUrl,
             SortOrder = section.SortOrder == 0 ? index : section.SortOrder
         }).ToList();
 
@@ -102,7 +104,7 @@ public class ContentController(AppDbContext db) : ControllerBase
             page.Title,
             page.Intro,
             page.Sections.OrderBy(section => section.SortOrder)
-                .Select(section => new ContentSectionDto(section.Title, section.Body, section.SortOrder))
+                .Select(section => new ContentSectionDto(section.Title, section.Body, section.SortOrder, section.DocumentTitle, section.DocumentUrl))
                 .ToList());
     }
 

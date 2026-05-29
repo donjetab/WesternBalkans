@@ -1,10 +1,10 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { BookOpen, Globe2, GraduationCap, Landmark, UsersRound } from "lucide-react";
+import { BookOpen, Download, Globe2, GraduationCap, Landmark, UsersRound } from "lucide-react";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { homepageFallback, pagesFallback } from "../data/fallbackContent.js";
-import { api } from "../services/api.js";
+import { api, resolveMediaUrl } from "../services/api.js";
 
 const overviewIcons = [UsersRound, BookOpen, GraduationCap];
 const impactIcons = [Landmark, Globe2, UsersRound, BookOpen];
@@ -14,6 +14,7 @@ export function ContentPage({ slug }) {
   const [page, setPage] = useState(pagesFallback[slug]);
   const isEventsPage = slug === "events";
   const isOverviewPage = slug === "overview";
+  const isDownloadsPage = slug === "downloads";
 
   useEffect(() => {
     const fallback = pagesFallback[slug];
@@ -33,19 +34,30 @@ export function ContentPage({ slug }) {
     return <ProjectOverviewPage page={page} />;
   }
 
+  const sections = isDownloadsPage
+    ? page.sections?.filter((section) => section.documentUrl)
+    : page.sections;
+
   return (
     <>
       <PageHero eyebrow={page.eyebrow} title={page.title} intro={page.intro} />
       <SectionReveal className="section">
         <div className={`container ${isEventsPage ? "events-list" : "content-grid"}`}>
-          {page.sections?.map((section, index) => {
+          {sections?.map((section, index) => {
             const Icon = contentIcons[index % contentIcons.length];
+            const hasDocument = Boolean(section.documentUrl);
 
             return isEventsPage ? <EventCard section={section} key={section.title} /> : (
               <article className="content-card" key={section.title}>
                 <div className="content-card-icon"><Icon size={28} /></div>
                 <h3>{section.title}</h3>
                 <p>{section.body}</p>
+                {hasDocument ? (
+                  <a className="content-card-action" href={resolveMediaUrl(section.documentUrl)} target="_blank" rel="noreferrer">
+                    <Download size={16} />
+                    Open PDF
+                  </a>
+                ) : null}
               </article>
             );
           })}

@@ -21,7 +21,7 @@ export function News() {
 
   return (
     <>
-      <PageHero eyebrow="News and events" title="News" intro="Recent updates, conferences, trainings, and public project activity." />
+      <PageHero className="news-simple-hero" eyebrow="News and events" title="News" intro="Recent updates, conferences, trainings, and public project activity." />
       <SectionReveal className="section news-list-section">
         <div className="container news-grid">
           {news.map((item) => <NewsCard item={item} key={item.id} />)}

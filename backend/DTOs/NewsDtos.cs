@@ -6,6 +6,10 @@ public record NewsDto(
     string Excerpt,
     string Content,
     string ImageUrl,
+    string ThumbnailUrl,
+    string DocumentTitle,
+    string DocumentUrl,
+    List<string> Gallery,
     DateTime PublishedAt,
     bool IsPublished);
 
@@ -14,5 +18,9 @@ public record UpsertNewsRequest(
     string Excerpt,
     string Content,
     string ImageUrl,
+    string ThumbnailUrl,
+    string DocumentTitle,
+    string DocumentUrl,
+    List<string> Gallery,
     DateTime PublishedAt,
     bool IsPublished);

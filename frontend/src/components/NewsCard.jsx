@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
+import { resolveMediaUrl } from "../services/api.js";
 
 function shortenText(text = "", sentenceLimit = 4) {
   const normalized = text.trim();
@@ -19,9 +20,9 @@ export function NewsCard({ item }) {
   const image = item.thumbnailUrl || item.imageUrl;
 
   return (
-    <article className="news-card">
+    <Link className="news-card news-card-link" to={`/news/${item.id}`} aria-label={`Read story: ${item.title}`}>
       <div className="news-image">
-        {image ? <img src={image} alt="" /> : <span>Edu4Migration</span>}
+        {image ? <img src={resolveMediaUrl(image)} alt="" /> : <span>Edu4Migration</span>}
       </div>
       <div className="news-body">
         <span className="news-date">
@@ -30,10 +31,10 @@ export function NewsCard({ item }) {
         </span>
         <h3>{item.title}</h3>
         <p>{excerpt}</p>
-        <Link className="text-link" to={`/news/${item.id}`}>
+        <span className="text-link">
           Read story <ArrowRight size={16} />
-        </Link>
+        </span>
       </div>
-    </article>
+    </Link>
   );
 }

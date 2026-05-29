@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Edu4Migration.Api.Data;
 using Edu4Migration.Api.DTOs;
 using Edu4Migration.Api.Models;
@@ -41,6 +42,10 @@ public class NewsController(AppDbContext db) : ControllerBase
             Excerpt = request.Excerpt,
             Content = request.Content,
             ImageUrl = request.ImageUrl,
+            ThumbnailUrl = request.ThumbnailUrl,
+            DocumentTitle = request.DocumentTitle,
+            DocumentUrl = request.DocumentUrl,
+            GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []),
             PublishedAt = request.PublishedAt,
             IsPublished = request.IsPublished
         };
@@ -64,6 +69,10 @@ public class NewsController(AppDbContext db) : ControllerBase
         item.Excerpt = request.Excerpt;
         item.Content = request.Content;
         item.ImageUrl = request.ImageUrl;
+        item.ThumbnailUrl = request.ThumbnailUrl;
+        item.DocumentTitle = request.DocumentTitle;
+        item.DocumentUrl = request.DocumentUrl;
+        item.GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []);
         item.PublishedAt = request.PublishedAt;
         item.IsPublished = request.IsPublished;
         item.UpdatedAt = DateTime.UtcNow;
@@ -89,6 +98,29 @@ public class NewsController(AppDbContext db) : ControllerBase
 
     private static NewsDto ToDto(NewsItem item)
     {
-        return new NewsDto(item.Id, item.Title, item.Excerpt, item.Content, item.ImageUrl, item.PublishedAt, item.IsPublished);
+        return new NewsDto(
+            item.Id,
+            item.Title,
+            item.Excerpt,
+            item.Content,
+            item.ImageUrl,
+            item.ThumbnailUrl,
+            item.DocumentTitle,
+            item.DocumentUrl,
+            DeserializeGallery(item.GalleryJson),
+            item.PublishedAt,
+            item.IsPublished);
+    }
+
+    private static List<string> DeserializeGallery(string json)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+        }
+        catch
+        {
+            return [];
+        }
     }
 }

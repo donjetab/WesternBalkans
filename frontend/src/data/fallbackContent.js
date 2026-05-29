@@ -73,11 +73,18 @@ export const newsFallback = [
     title: "Global Perspectives on Migration and Social Work Highlighted in Two-Day International Hybrid Student Conference",
     excerpt:
       "The conference took place on March 26-27, 2026, hosted at LOGOS University College in Tirana and AAB College in Prishtina, focusing on migration, resilience, psychosocial support, and inclusive institutional frameworks.",
-    content: "Students, researchers, and practitioners explored interdisciplinary responses to migration, with attention to vulnerability, resilience, psychosocial support, and inclusive frameworks.",
+    content:
+      "The International Hybrid Student Conference on Social Work and Migration - \"Challenges, Resilience, and Innovative Practices in Supporting Migrant Communities\" took place on March 26-27, 2026, as part of the Edu4Migration project, hosted at LOGOS University College in Tirana and AAB College in Prishtina.\n\n" +
+      "The conference brought together students, academics, and professionals to discuss key issues in migration and social work. Over the two days, sessions focused on structural and policy challenges, the need for more inclusive institutional frameworks, and psychosocial support for individuals and communities affected by migration.\n\n" +
+      "Discussions emphasized resilience and community-based approaches, strengthening local capacities, and promoting sustainable support systems for migrant populations. Particular attention was given to the psychological dimension of migration, including mental health, emotional well-being, acculturative stress, and barriers to reporting gender-based violence.\n\n" +
+      "Students and researchers presented studies and innovative practices, fostering international cooperation and interdisciplinary dialogue. The conference served as a vital platform for exchanging ideas, experiences, and sustainable solutions in the field of migration and social work.",
     publishedAt: "2026-03-30",
-    thumbnailUrl: "/assets/total.jpg",
-    imageUrl: "/assets/total.jpg",
-    gallery: ["/assets/total.jpg", "/assets/Ardiani.jpg"],
+    thumbnailUrl: "/assets/News/2026.03.30 - Global Perspectives/1.jpg",
+    imageUrl: "/assets/News/2026.03.30 - Global Perspectives/1.jpg",
+    gallery: ["/assets/News/2026.03.30 - Global Perspectives/2.png", 
+      "/assets/News/2026.03.30 - Global Perspectives/3.jpg",
+      "/assets/News/2026.03.30 - Global Perspectives/4.jpg",
+      "/assets/News/2026.03.30 - Global Perspectives/5.png",],
     isPublished: true
   },
   {
@@ -85,10 +92,17 @@ export const newsFallback = [
     title: "International Hybrid Student Conference on Social Work and Migration Kicks Off at LOGOS University College in Tirana",
     excerpt:
       "The first day emphasized collaborative and interdisciplinary responses to migration challenges, vulnerability, trauma, resilience, and community-based approaches.",
-    content: "The conference opened with presentations and discussion panels across partner institutions.",
+    content:
+      "The first day of the International Hybrid Student Conference on Social Work and Migration – \"Challenges, Resilience, and Innovative Practices in Supporting Migrant Communities\" was successfully held on March 26, 2026, at LOGOS University College in Tirana, within the framework of the Edu4Migration project.\n\n" +
+      "The conference brought together students, academics, and professionals to discuss key issues related to migration and social work.\n\n" +
+      "The day began with opening remarks, emphasizing the importance of addressing migration challenges through collaborative and interdisciplinary approaches. Throughout the day, presentations and discussions focused on structural and policy challenges in social work with migrants, highlighting the need for more inclusive and effective institutional frameworks.\n\n" +
+      "Participants also explored themes related to vulnerability, trauma, and psychosocial support, sharing insights on how to better support individuals and communities affected by migration. In addition, particular attention was given to resilience and community-based approaches, with discussions centered on strengthening local capacities and promoting sustainable support systems for migrant populations.\n\n" +
+      "The sessions encouraged active engagement, allowing participants to exchange ideas, experiences, and innovative practices. The first day concluded with reflections on the key topics discussed and the importance of continuing dialogue and cooperation in this field.\n\n" +
+      "The second day of the conference was held at AAB College in Prishtina.",
     publishedAt: "2026-03-30",
-    thumbnailUrl: "/assets/Ardiani.jpg",
-    imageUrl: "/assets/Ardiani.jpg",
+    thumbnailUrl: "/assets/News/2026.03.30 - International Hybrid Student Conference/thumbnail.jpg",
+    imageUrl: "/assets/News/2026.03.30 - International Hybrid Student Conference/thumbnail.jpg",
+    gallery: [],
     isPublished: true
   },
   {
@@ -96,10 +110,31 @@ export const newsFallback = [
     title: "Second Day of the International Student Conference on Social Work and Migration Held at AAB College",
     excerpt:
       "The second day in Prishtina focused on children and families in migration contexts, psychological support, educational settings, ethics, and interdisciplinary cooperation.",
-    content: "AAB College hosted the second conference day with sessions focused on children, families, psychological support, education, ethics, and cross-sector cooperation.",
-    publishedAt: "2026-03-27",
-    thumbnailUrl: "/assets/Ardiani.jpg",
-    imageUrl: "/assets/Ardiani.jpg",
+    content:
+      "The International Hybrid Student Conference on Social Work and Migration – \"Challenges, Resilience, and Innovative Practices in Supporting Migrant Communities\" took place on March 26–27, 2026, as part of the Edu4Migration project, hosted at LOGOS University College in Tirana and AAB College in Prishtina.\n\n" +
+      "The conference brought together students, academics, and professionals to discuss key issues in migration and social work. Over the two days, sessions focused on structural and policy challenges, the need for more inclusive institutional frameworks, and psychosocial support for individuals and communities affected by migration.\n\n" +
+      "Discussions emphasized resilience and community-based approaches, strengthening local capacities, and promoting sustainable support systems for migrant populations. Particular attention was given to the psychological dimension of migration, including mental health, emotional well-being, acculturative stress, and barriers to reporting gender-based violence.\n\n" +
+      "Students and researchers presented studies and innovative practices, fostering international cooperation and interdisciplinary dialogue. The conference served as a vital platform for exchanging ideas, experiences, and sustainable solutions in the field of migration and social work.",    publishedAt: "2026-03-27",
+    thumbnailUrl: "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/1.jpg",
+    imageUrl: "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/1.jpg",
+    gallery: ["/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/1.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/2.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/3.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/4.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/5.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/6.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/7.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/8.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/9.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/10.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/11.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/12.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/13.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/14.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/15.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/16.jpg",
+      "/assets/News/2026.03.27 - Two-Day International Hybrid Student Conference/17.jpg",
+    ],
     isPublished: true
   },
   {
@@ -107,9 +142,16 @@ export const newsFallback = [
     title: "Upcoming International Student Conference on Social Work and Migration",
     excerpt:
       "The International Hybrid Student Conference on Social Work and Migration was scheduled for March 26-27, 2026, with Day 1 at LOGOS University College in Tirana and Day 2 at AAB College in Prishtina.",
-    content: "The event invited participants to explore structural and policy challenges, psychosocial trauma and resilience, and innovative practices in social services, education, and migration management.",
+    content:
+      "Join us for the upcoming International Hybrid Student Conference on Social Work and Migration – \"Student Resilience and Innovative Practices in Supporting Migrant Communities\", organized by the EU-funded WB-Edu4Migration project.\n\n" +
+      "This two-day event will take place on March 26–27, 2026, bringing together students, academics, researchers, and professionals to discuss key challenges and innovative approaches in supporting migrant communities. Day 1 will be hosted by LOGOS University College in Tirana, Albania, on March 26, while Day 2 will take place at AAB College in Prishtina, Kosovo, on March 27.\n\n" +
+      "Participants will explore topics including structural and policy challenges in social work with migrants, psychosocial trauma and resilience, innovative practices in social services, education, and migration management, as well as approaches that promote inclusion, well-being, and sustainable support systems for migrant populations.\n\n" +
+      "Link for Day 2 in Prishtina:\nhttps://meet.google.com/bbt-suhj-uzp\n\n" +
+      "Link for Day 1 in Tirana:\nhttps://teams.microsoft.com/meet/34401564410810?p=TwtCjLwB6lI9rHPnSb",
     publishedAt: "2026-03-26",
-    imageUrl: "",
+    thumbnailUrl: "/assets/News/2026.03.26 - Upcoming International Student Conference/thumbnail.png",
+    imageUrl: "/assets/News/2026.03.26 - Upcoming International Student Conference/thumbnail.png",
+    gallery:[],
     isPublished: true
   },
   {
@@ -117,19 +159,103 @@ export const newsFallback = [
     title: "Call for Abstracts: International Student Conference on Social Work and Migration",
     excerpt:
       "The project invited students from partner institutions to submit abstracts on challenges, resilience, and innovative practices in supporting migrant communities.",
-    content: "Themes included structural policy challenges, vulnerability and psychosocial support, resilience strategies, psychology in migration, innovative social services, and professional development in education and ethics.",
+    content:
+      "The International Hybrid Student Conference on \"Social Work and Migration: Challenges, Resilience, and Innovative Practices in Supporting Migrant Communities\" invites abstract submissions from students across partner institutions.\n\n" +
+      "Scheduled for March 26–27, 2026, the conference will be held in a hybrid format, with Day 1 hosted on-site and online at LOGOS University College in Tirana, Albania, and Day 2 taking place at AAB College in Prishtina, Kosovo. The event is organized within the framework of the WB-Edu4Migration Project.\n\n" +
+      "The conference aims to provide a platform for students to present research, exchange ideas, and engage in interdisciplinary discussions on migration and social work. Themes include structural and policy challenges, vulnerability and psychosocial support, resilience strategies, psychology in migration, innovative social services, and professional development in education and ethics.\n\n" +
+      "Students are invited to submit abstracts of 250–300 words in English by March 20, 2026. Selected participants will have the opportunity to present their work and contribute to meaningful dialogue on supporting migrant communities through innovative and sustainable practices.",
     publishedAt: "2026-03-11",
+    thumbnailUrl: "/assets/News/2026.03.11 - Call for Abstracts International Student Conference/thumbnail.png",
+    documentTitle: "Call for Abstracts PDF",
+    documentUrl: "/uploads/Documents/Call_for_Abstracts_International_Student_Conference_Social_Work_and_Migration.pdf",
     imageUrl: "",
     isPublished: true
   },
   {
     id: 6,
-    title: "IULM University Leads Regional Training to Advance Micro-Credential Courses",
+    title: "Edu4Migration Project – IULM University Leads Regional Training to Advance Micro-Credential Courses Across the Western Balkans",
     excerpt:
       "A regional training activity supported trainers and academic staff in designing flexible micro-credential courses across the Western Balkans.",
-    content: "The training helped partner universities prepare targeted professional learning pathways.",
+    content:
+      "The <a href=\"https://openday.iulm.it/\" target=\"_blank\" rel=\"noopener noreferrer\">IULM University</a> (Italy) successfully led the E4.1 Training of Trainers (ToT) for Western Balkan University Partners, focused on developing micro-credential courses under the WB-Edu4Migration project. The ToT was held on 17–18 November at <a href=\"https://aab-edu.net\" target=\"_blank\" rel=\"noopener noreferrer\">AAB College</a> in Prishtina and continued on 20–21 November at Barleti University in Tirana, bringing together project staff and regional partners for a collaborative learning experience.\n\n" +
+      "The training showcased IULM’s expertise in innovative higher-education methodologies. While <a href=\"https://openday.iulm.it/\" target=\"_blank\" rel=\"noopener noreferrer\">IULM</a> professors Andrea Miconi and Simona Pezzano conducted sessions online, Fabio De Giorgio from <a href=\"https://openday.iulm.it/\" target=\"_blank\" rel=\"noopener noreferrer\">IULM</a> facilitated the program in person at AAB College, ensuring seamless interaction between the participants and the trainers. The Prishtina sessions included professors from <a href=\"https://aab-edu.net/\" target=\"_blank\" rel=\"noopener noreferrer\">AAB College</a>, <a href=\"https://ibcmitrovica.eu\" target=\"_blank\" rel=\"noopener noreferrer\">IBCM</a>, and the <a href=\"https://uni-gjk.org\" target=\"_blank\" rel=\"noopener noreferrer\">University of Gjakova “Fehmi Agani”</a>. The sessions in Tirana brought together representatives from <a href=\"https://logos.edu.al\" target=\"_blank\" rel=\"noopener noreferrer\">LOGOS University College</a>, Barleti University, and the <a href=\"https://unitir.edu.al\" target=\"_blank\" rel=\"noopener noreferrer\">University of Tirana</a>, further enhancing regional collaboration and knowledge exchange.\n\n" +
+      "The first day focused on foundational concepts of micro-credentials, international standards, and successful implementation models. Participants explored ways to integrate micro-credentials into contemporary higher-education systems, highlighting IULM’s thought leadership in flexible and future-oriented learning solutions.\n\n" +
+      "The second day emphasized practical application. Participants designed course structures, defined learning outcomes, and carried out exercises based on the materials developed under Work Package 3, applying IULM’s pedagogical frameworks to real-world scenarios.\n\n" +
+      "The E4.1 training provided a dynamic platform for collaboration, knowledge exchange, and capacity building. IULM University reinforced its role as a driving force in the development of micro-credential education, supporting the creation of flexible learning pathways that respond to contemporary educational and labor-market needs across the Western Balkans.",
     publishedAt: "2025-12-02",
-    imageUrl: "",
+    thumbnailUrl: "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/1.jpg",
+    imageUrl: "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/1.jpg",
+    gallery: ["/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/2.png",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/3.png",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/4.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/5.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/6.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/7.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/8.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/9.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/10.jpg",
+      "/assets/News/2025.12.05 - Edu4Migration Project – IULM University Leads Regional Training/11.jpg",
+    ],
+    isPublished: true
+  },
+  {
+    id: 7,
+    title: "WB-Edu4Migration hosts two-day training of Trainers at AAB College",
+    excerpt:"AAB College in Prishtina hosted the two-day Training of Trainers under the WB-Edu4Migration Project, funded by the European Commission through the Erasmus+ program.",
+    content:
+      "AAB College in Prishtina hosted the two-day Training of Trainers under the WB-Edu4Migration Project, funded by the European Commission through the Erasmus+ Programme. The training focused on developing micro-credential courses for Western Balkan university partners and was held on 17–18 November 2025, bringing together academic staff to strengthen expertise in planning, designing, and evaluating micro-credentials.\n\n" +
+      "The first day introduced participants to the conceptual foundations of micro-credentials, their key characteristics, and their growing relevance in contemporary higher education. Sessions explored the benefits of micro-credentials for learners, educators, and employers, while also presenting case studies and examples of successful implementation.\n\n" +
+      "Participants examined different models of micro-credential courses and reviewed the Pages Project online course on cross-media journalism, as well as the Erasmus+-funded CLIP project focused on visual media literacy. These examples provided practical insights into the development and delivery of flexible learning opportunities.\n\n" +
+      "The second day focused on the practical design of micro-credential courses. Participants worked on organizing materials from Work Package 3, defining learning outcomes, structuring course content, and developing engaging learning activities. Additional sessions addressed the selection of digital tools, course development processes, and a mini iteration exercise that allowed participants to test and refine their course designs.\n\n" +
+      "The training provided a valuable platform for collaboration, knowledge exchange, and capacity building among universities in the region. It marked an important step toward advancing innovative and flexible learning pathways that respond to the evolving needs of students, higher education institutions, and the labor market.",
+    publishedAt: "2025-11-20",
+    thumbnailUrl: "/assets/News/2025.11.20 - WB-Edu4Migration hosts two-day training of Trainers at AAB College/thumbnail.jpg",
+    imageUrl: "/assets/News/2025.11.20 - WB-Edu4Migration hosts two-day training of Trainers at AAB College/thumbnail.jpg",
+    gallery: [],
+    isPublished: true
+  },
+  {
+    id: 8,
+    title: "International Training of Trainers Held in Vejle, Denmark",
+    excerpt:"In Vejle, Denmark, the Training of Trainers activity was held within the framework of the WB-Edu4Migration project, funded by the Erasmus+ Programme of the European Commission.",
+    content:"",
+    publishedAt: "2025-11-20",
+    thumbnailUrl: "/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/thumbnail.jpg",
+    imageUrl: "/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/thumbnail.jpg",
+    gallery: ["/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/1.jpg",
+      "/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/2.jpg",
+      "/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/3.jpg",
+      "/assets/News/2025.11.07 - International Training of Trainers Held in Vejle, Denmark/4.jpg",
+    ],
+    isPublished: true
+  },
+  {
+    id: 9,
+    title: "Three-day Training for the Development of Contemporary Teaching Methodologies in Denmark",
+    excerpt:"In Vejle, Denmark, a three-day training is taking place for the academic staff of partner universities from the Western Balkans, within the framework of the “Training of Trainers” activity.",
+    content:
+      "A three-day Training of Trainers activity was held in Vejle, Denmark, within the framework of the WB-Edu4Migration project, funded by the European Commission through the Erasmus+ Programme. The training brought together academic staff from partner universities across the Western Balkans to strengthen their capacities in developing case studies and implementing Project-Based Learning (PBL) and Problem-Based Learning (PrBL) methodologies.\n\n" +
+      "Hosted by <a href=\"https://www.ucl.dk\" target=\"_blank\" rel=\"noopener noreferrer\">UCL University College</a> in Vejle, the training focused on creating stronger connections between theory and practice in higher education. Participants explored innovative teaching approaches designed to enhance student engagement, critical thinking, and real-world problem-solving skills.\n\n" +
+      "Twelve academic representatives from partner institutions participated in the activity, including <a href=\"https://aab-edu.net\" target=\"_blank\" rel=\"noopener noreferrer\">AAB College</a>, <a href=\"https://ibcmitrovica.eu\" target=\"_blank\" rel=\"noopener noreferrer\">IBCM</a>, <a href=\"https://uni-gjk.org\" target=\"_blank\" rel=\"noopener noreferrer\">University of Gjakova “Fehmi Agani”</a>, <a href=\"https://unitir.edu.al\" target=\"_blank\" rel=\"noopener noreferrer\">University of Tirana</a>, <a href=\"https://www.uniba.sk\" target=\"_blank\" rel=\"noopener noreferrer\">UniBA</a>, <a href=\"https://logos.edu.al\" target=\"_blank\" rel=\"noopener noreferrer\">LOGOS University College</a>, UCL University College, IREDS, and IRCA.\n\n" +
+      "Throughout the three days, participants engaged in interactive workshops, collaborative group work, and experience-sharing sessions. They worked on developing concrete case study examples and explored practical methods for integrating PBL and PrBL approaches into their academic programs.\n\n" +
+      "The training provided a valuable platform for collaboration, knowledge exchange, and professional development among partner institutions. By promoting innovative and student-centered learning methodologies, the activity contributed to strengthening higher education practices across the region and enhancing cooperation among universities involved in the WB-Edu4Migration project.",
+    publishedAt: "2025-10-29",
+    thumbnailUrl: "/assets/News/2025.10.29 - Three-day Training for the Development of Contemporary Teaching Methodologies in Denmark/1.jpg",
+    imageUrl: "/assets/News/2025.10.29 - Three-day Training for the Development of Contemporary Teaching Methodologies in Denmark/1.jpg",
+    gallery: ["/assets/News/2025.10.29 - Three-day Training for the Development of Contemporary Teaching Methodologies in Denmark/2.jpg",
+      "/assets/News/2025.10.29 - Three-day Training for the Development of Contemporary Teaching Methodologies in Denmark/1.jpg"
+    ],
+    isPublished: true
+  },
+  {
+    id: 10,
+    title: "CALL FOR EXTERNAL EXPERT – Development of Micro-Credential Courses",
+    excerpt:"The project WB–Edu4Migration – “Mitigating Migration Challenges in the Western Balkans through Curriculum Enhancement and Micro-Credential Development in Social Care” –, co – founded by the European Union, is launching a call for an external expert in the field of higher education and micro-credentialing.",
+    content:"",
+    publishedAt: "2025-06-04",
+    documentTitle: "ToR Microcredential PDF",
+    documentUrl: "/uploads/Documents/ToR-Microcredential-Expert-WB-Edu4Migration.pdf",
+    thumbnailUrl: "/assets/News/2025.06.04 - Call for external expert/thumbnail.png",
     isPublished: true
   }
 ];
@@ -281,7 +407,8 @@ export const pagesFallback = {
       { title: "Academic staff preparation", body: "Training materials and Training of Trainers activities support educators in designing and piloting course content." }
     ]
   },
-  "work-packages": {
+  "work-packages": 
+  {
     eyebrow: "Activities",
     title: "Work Packages",
     intro: "The project activities are organized into work packages covering management, needs analysis, curriculum development, micro-credentials, quality, and dissemination.",
@@ -294,7 +421,8 @@ export const pagesFallback = {
       { title: "WP6 - Dissemination and sustainability", body: "Plan dissemination, exploitation, and sustainability activities and organize final dissemination conferences." }
     ]
   },
-  deliverables: {
+  deliverables: 
+  {
     eyebrow: "Outputs",
     title: "Deliverables",
     intro: "Deliverables from the live project list, organized as a public output catalog.",
@@ -317,7 +445,8 @@ export const pagesFallback = {
       { title: "D6.2 - Final Dissemination Conference Report", body: "Due 31.10.2027." }
     ]
   },
-  milestones: {
+  milestones: 
+  {
     eyebrow: "Timeline",
     title: "Milestones",
     intro: "Eight project milestones structure implementation from management setup to curriculum revision.",
@@ -332,7 +461,8 @@ export const pagesFallback = {
       { title: "M8 - Curriculum revision report", body: "Report on Curriculum and Course Revisions and Feedback." }
     ]
   },
-  events: {
+  events: 
+  {
     eyebrow: "Activities",
     title: "Events",
     intro: "Workshops, practitioners' days, roundtables, trainings, and dissemination conferences.",
@@ -352,7 +482,8 @@ export const pagesFallback = {
       { title: "E6.2 - Final Dissemination Conference in Albania", body: "Conference in Tirana, Albania. 1 day, 50 attendees. Present project results and discuss future application in the region." }
     ]
   },
-  updates: {
+  updates: 
+  {
     eyebrow: "Updates",
     title: "Project Updates",
     intro: "The live project-updates page is reserved for ongoing implementation updates.",
@@ -361,16 +492,28 @@ export const pagesFallback = {
       { title: "Admin-managed updates", body: "Use the admin panel to publish new updates without editing code." }
     ]
   },
-  downloads: {
+  downloads: 
+  {
     eyebrow: "Resources",
     title: "Downloadable Documents",
     intro: "The downloadable documents section is ready for public files and project outputs.",
     sections: [
-      { title: "Available document types", body: "Reports, plans, guidelines, training materials, case studies, and dissemination outputs can be listed here." },
-      { title: "Admin-managed resources", body: "Files can be uploaded through the media library and referenced from the frontend content." }
+      {
+        title: "Call for Abstracts: International Student Conference on Social Work and Migration",
+        body: "Download the call for abstracts for the International Student Conference on Social Work and Migration.",
+        documentTitle: "Call for Abstracts PDF",
+        documentUrl: "/uploads/Documents/Call_for_Abstracts_International_Student_Conference_Social_Work_and_Migration.pdf"
+      },
+      {
+        title: "Terms of Reference: Microcredential Expert",
+        body: "Download the terms of reference for the Microcredential Expert role under the WB-Edu4Migration project.",
+        documentTitle: "ToR Microcredential Expert PDF",
+        documentUrl: "/uploads/Documents/ToR-Microcredential-Expert-WB-Edu4Migration.pdf"
+      }
     ]
   },
-  "case-studies": {
+  "case-studies": 
+  {
     eyebrow: "Resources",
     title: "Case Studies and Reports",
     intro: "This section is prepared for migration-focused case studies and project reports.",
@@ -379,7 +522,8 @@ export const pagesFallback = {
       { title: "Reports", body: "Needs assessment reports, practitioner-day reports, roundtable reports, and curriculum feedback reports can be collected here." }
     ]
   },
-  multimedia: {
+  multimedia: 
+  {
     eyebrow: "Resources",
     title: "Multimedia",
     intro: "The live multimedia page is reserved for project photos, videos, and visual material.",

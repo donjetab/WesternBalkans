@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5088/api";
+const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 const TOKEN_KEY = "edu4migration_admin_token";
 const PUBLIC_REQUEST_TIMEOUT = 900;
 const cache = new Map();
@@ -13,6 +14,18 @@ export function setToken(token) {
 
 export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
+}
+
+export function resolveMediaUrl(url = "") {
+  if (!url || url.startsWith("http") || url.startsWith("data:") || url.startsWith("blob:")) {
+    return url;
+  }
+
+  if (url.startsWith("/uploads/")) {
+    return `${API_ORIGIN}${url}`;
+  }
+
+  return url;
 }
 
 async function request(path, options = {}) {
@@ -64,6 +77,7 @@ export const api = {
   updateHomepage: (payload) => request("/content/homepage", { method: "PUT", body: JSON.stringify(payload) }),
   getPage: (slug) => request(`/content/pages/${slug}`),
   getPageFast: (slug, fallback) => cachedPublicRequest(`/content/pages/${slug}`, fallback),
+  updatePage: (slug, payload) => request(`/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(payload) }),
   getNews: (includeDrafts = false) => request(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
   getNewsFast: (includeDrafts = false, fallback = []) => cachedPublicRequest(`/news${includeDrafts ? "?includeDrafts=true" : ""}`, fallback),
   getNewsItemFast: async (id, fallbackItems = []) => {
@@ -75,11 +89,15 @@ export const api = {
   updateNews: (id, payload) => request(`/news/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteNews: (id) => request(`/news/${id}`, { method: "DELETE" }),
   getMedia: () => request("/media"),
-  uploadMedia: async (file, altText = "") => {
+  uploadMedia: async (file, altText = "", options = {}) => {
     const token = getToken();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("altText", altText);
+    if (options.folder) formData.append("folder", options.folder);
+    if (options.publishedAt) formData.append("publishedAt", options.publishedAt);
+    if (options.title) formData.append("title", options.title);
+    if (Number.isInteger(options.fileIndex)) formData.append("fileIndex", String(options.fileIndex));
     const response = await fetch(`${API_BASE}/media/upload`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -87,7 +105,9 @@ export const api = {
     });
     if (!response.ok) throw new Error(await response.text());
     return response.json();
-  }
+  },
+  deleteMedia: (id) => request(`/media/${id}`, { method: "DELETE" }),
+  deleteMediaByUrl: (url) => request(`/media?url=${encodeURIComponent(url)}`, { method: "DELETE" })
 };
 
 export async function withFallback(fetcher, fallback) {

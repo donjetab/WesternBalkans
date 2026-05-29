@@ -5,6 +5,9 @@
     "dev": "npm.cmd --prefix frontend run dev",
     "build": "npm.cmd --prefix frontend run build",
     "preview": "npm.cmd --prefix frontend run preview",
-    "api": "dotnet run --project backend/Edu4Migration.Api.csproj"
+    "api": "dotnet run --project backend/Edu4Migration.Api.csproj",
+    "sync-content": "node scripts/sync-content-from-fallback.mjs",
+    "migrate-news-assets": "node scripts/migrate-news-assets-to-uploads.mjs",
+    "migrate-documents": "node scripts/migrate-documents-to-uploads.mjs"
   }
 }

@@ -14,5 +14,5 @@ public record HomepageDto(
     List<FocusAreaDto> FocusAreas,
     List<PartnerDto> Partners);
 
-public record ContentSectionDto(string Title, string Body, int SortOrder = 0);
+public record ContentSectionDto(string Title, string Body, int SortOrder = 0, string DocumentTitle = "", string DocumentUrl = "");
 public record ContentPageDto(string Slug, string Eyebrow, string Title, string Intro, List<ContentSectionDto> Sections);
