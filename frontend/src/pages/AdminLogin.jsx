@@ -30,8 +30,8 @@ export function AdminLogin() {
     <main className="admin-login">
       <form className="login-card" onSubmit={submit}>
         <div className="login-icon"><LockKeyhole size={26} /></div>
-        <h1>Admin panel</h1>
-        <p>Protected access for editing homepage content, news, and media references.</p>
+        <h1>Admin Login</h1>
+        {/* <p>Protected access for editing homepage content, news, and media references.</p> */}
         <label>
           Email
           <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
@@ -41,7 +41,7 @@ export function AdminLogin() {
           <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required />
         </label>
         {error ? <div className="form-error">{error}</div> : null}
-        <button className="btn btn-primary" disabled={loading} type="submit">
+        <button className="btn btn-primary" style={{ marginTop: 15 }} disabled={loading} type="submit">
           {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>

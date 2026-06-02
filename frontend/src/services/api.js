@@ -74,10 +74,18 @@ export const api = {
   login: (email, password) => request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   getHomepage: () => request("/content/homepage"),
   getHomepageFast: (fallback) => cachedPublicRequest("/content/homepage", fallback),
-  updateHomepage: (payload) => request("/content/homepage", { method: "PUT", body: JSON.stringify(payload) }),
+  updateHomepage: async (payload) => {
+    const data = await request("/content/homepage", { method: "PUT", body: JSON.stringify(payload) });
+    cache.delete("/content/homepage");
+    return data;
+  },
   getPage: (slug) => request(`/content/pages/${slug}`),
   getPageFast: (slug, fallback) => cachedPublicRequest(`/content/pages/${slug}`, fallback),
-  updatePage: (slug, payload) => request(`/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(payload) }),
+  updatePage: async (slug, payload) => {
+    const data = await request(`/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(payload) });
+    cache.delete(`/content/pages/${slug}`);
+    return data;
+  },
   getNews: (includeDrafts = false) => request(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
   getNewsFast: (includeDrafts = false, fallback = []) => cachedPublicRequest(`/news${includeDrafts ? "?includeDrafts=true" : ""}`, fallback),
   getNewsItemFast: async (id, fallbackItems = []) => {

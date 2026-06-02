@@ -39,11 +39,15 @@ public class NewsController(AppDbContext db) : ControllerBase
         var item = new NewsItem
         {
             Title = request.Title,
+            TitleSq = request.TitleSq,
             Excerpt = request.Excerpt,
+            ExcerptSq = request.ExcerptSq,
             Content = request.Content,
+            ContentSq = request.ContentSq,
             ImageUrl = request.ImageUrl,
             ThumbnailUrl = request.ThumbnailUrl,
             DocumentTitle = request.DocumentTitle,
+            DocumentTitleSq = request.DocumentTitleSq,
             DocumentUrl = request.DocumentUrl,
             GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []),
             PublishedAt = request.PublishedAt,
@@ -66,11 +70,15 @@ public class NewsController(AppDbContext db) : ControllerBase
         }
 
         item.Title = request.Title;
+        item.TitleSq = request.TitleSq;
         item.Excerpt = request.Excerpt;
+        item.ExcerptSq = request.ExcerptSq;
         item.Content = request.Content;
+        item.ContentSq = request.ContentSq;
         item.ImageUrl = request.ImageUrl;
         item.ThumbnailUrl = request.ThumbnailUrl;
         item.DocumentTitle = request.DocumentTitle;
+        item.DocumentTitleSq = request.DocumentTitleSq;
         item.DocumentUrl = request.DocumentUrl;
         item.GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []);
         item.PublishedAt = request.PublishedAt;
@@ -101,11 +109,15 @@ public class NewsController(AppDbContext db) : ControllerBase
         return new NewsDto(
             item.Id,
             item.Title,
+            item.TitleSq,
             item.Excerpt,
+            item.ExcerptSq,
             item.Content,
+            item.ContentSq,
             item.ImageUrl,
             item.ThumbnailUrl,
             item.DocumentTitle,
+            item.DocumentTitleSq,
             item.DocumentUrl,
             DeserializeGallery(item.GalleryJson),
             item.PublishedAt,

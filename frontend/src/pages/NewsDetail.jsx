@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
+import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { newsFallback } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl } from "../services/api.js";
 
 export function NewsDetail() {
   const { id } = useParams();
+  const { language, t } = useLanguage();
   const fallbackItem = useMemo(() => newsFallback.find((item) => String(item.id) === String(id)) || newsFallback[0], [id]);
   const [item, setItem] = useState(fallbackItem);
 
@@ -25,10 +27,15 @@ export function NewsDetail() {
     };
   }, [fallbackItem, id]);
 
+  const locale = language === "sq" ? "sq-AL" : undefined;
+  const title = localized(item.title, item.titleSq, language);
+  const excerpt = localized(item.excerpt, item.excerptSq, language);
+  const content = localized(item.content, item.contentSq, language);
+  const documentTitle = localized(item.documentTitle, item.documentTitleSq, language);
   const date = item.publishedAt
-    ? new Date(item.publishedAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
-    : "Project update";
-  const heroImage = item.imageUrl || item.thumbnailUrl;
+    ? new Date(item.publishedAt).toLocaleDateString(locale, { month: "long", day: "numeric", year: "numeric" })
+    : t("projectUpdate");
+  const heroImage = item.thumbnailUrl || item.imageUrl;
   const gallery = item.gallery?.length ? item.gallery : heroImage ? [heroImage] : [];
 
   return (
@@ -36,12 +43,12 @@ export function NewsDetail() {
       <PageHero
         className="news-simple-hero news-detail-hero"
         eyebrow=""
-        title={item.title}
-        intro={item.excerpt}
+        title={title}
+        intro={excerpt}
         topContent={(
           <Link className="news-hero-back" to="/news">
             <ArrowLeft size={17} />
-            Back to news
+            {t("backToNews")}
           </Link>
         )}
         metaContent={(
@@ -55,12 +62,12 @@ export function NewsDetail() {
         <article className="container news-detail">
           {heroImage ? (
             <div className="news-detail-hero-image">
-              <img src={resolveMediaUrl(heroImage)} alt={item.title} />
+              <img src={resolveMediaUrl(heroImage)} alt={title} />
             </div>
           ) : null}
 
           <div className="news-detail-content">
-            {(item.content || item.excerpt || "").split("\n").filter(Boolean).map((paragraph) => (
+            {(content || excerpt || "").split("\n").filter(Boolean).map((paragraph) => (
               <p key={paragraph}>{renderLinkedText(paragraph)}</p>
             ))}
           </div>
@@ -71,16 +78,16 @@ export function NewsDetail() {
                 <div className="news-document-title">
                   <FileText size={22} />
                   <div>
-                    <span>Attached document</span>
-                    <h2>{item.documentTitle || "Project document"}</h2>
+                    <span>{t("attachedDocument")}</span>
+                    <h2>{documentTitle || t("projectDocument")}</h2>
                   </div>
                 </div>
                 <a className="btn btn-primary" href={resolveMediaUrl(item.documentUrl)} target="_blank" rel="noreferrer">
                   <Download size={17} />
-                  Open PDF
+                  {t("openPdf")}
                 </a>
               </div>
-              <iframe className="news-document-frame" src={resolveMediaUrl(item.documentUrl)} title={item.documentTitle || item.title} />
+              <iframe className="news-document-frame" src={resolveMediaUrl(item.documentUrl)} title={documentTitle || title} />
             </section>
           ) : null}
 

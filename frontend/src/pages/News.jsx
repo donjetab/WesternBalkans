@@ -3,11 +3,13 @@ import { useEffect, useState } from "react";
 import { NewsCard } from "../components/NewsCard.jsx";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import { newsFallback } from "../data/fallbackContent.js";
 import { api } from "../services/api.js";
 
 export function News() {
   const [news, setNews] = useState(newsFallback);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let active = true;
@@ -21,7 +23,7 @@ export function News() {
 
   return (
     <>
-      <PageHero className="news-simple-hero" eyebrow="News and events" title="News" intro="Recent updates, conferences, trainings, and public project activity." />
+      <PageHero eyebrow={t("newsEyebrow")} title={t("newsTitle")} intro={t("newsIntro")} />
       <SectionReveal className="section news-list-section">
         <div className="container news-grid">
           {news.map((item) => <NewsCard item={item} key={item.id} />)}

@@ -59,8 +59,11 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    await EnsureHomepageColumnsAsync(db);
+    await EnsureContentPageColumnsAsync(db);
     await EnsureNewsColumnsAsync(db);
     await EnsureContentSectionColumnsAsync(db);
+    await BackfillAlbanianContentAsync(db);
     await MigrateDocumentUrlsAsync(db);
     await scope.ServiceProvider.GetRequiredService<SeedService>().SeedAsync();
 }
@@ -86,10 +89,74 @@ app.MapControllers();
 
 app.Run();
 
+static async Task EnsureHomepageColumnsAsync(AppDbContext db)
+{
+    var connection = db.Database.GetDbConnection();
+    if (connection.State != System.Data.ConnectionState.Open)
+    {
+        await connection.OpenAsync();
+    }
+
+    var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    await using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info(HomepageContents)";
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            existingColumns.Add(reader.GetString(1));
+        }
+    }
+
+    var requiredColumns = new Dictionary<string, string>
+    {
+        ["HeroEyebrowSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["HeroTitleSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["HeroSubtitleSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["HeroBodySq"] = "TEXT NOT NULL DEFAULT ''",
+        ["StatsSqJson"] = "TEXT NOT NULL DEFAULT '[]'",
+        ["FocusAreasSqJson"] = "TEXT NOT NULL DEFAULT '[]'"
+    };
+
+    await AddMissingColumnsAsync(connection, "HomepageContents", existingColumns, requiredColumns);
+}
+
+static async Task EnsureContentPageColumnsAsync(AppDbContext db)
+{
+    var connection = db.Database.GetDbConnection();
+    if (connection.State != System.Data.ConnectionState.Open)
+    {
+        await connection.OpenAsync();
+    }
+
+    var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    await using (var command = connection.CreateCommand())
+    {
+        command.CommandText = "PRAGMA table_info(ContentPages)";
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            existingColumns.Add(reader.GetString(1));
+        }
+    }
+
+    var requiredColumns = new Dictionary<string, string>
+    {
+        ["EyebrowSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["IntroSq"] = "TEXT NOT NULL DEFAULT ''"
+    };
+
+    await AddMissingColumnsAsync(connection, "ContentPages", existingColumns, requiredColumns);
+}
+
 static async Task EnsureNewsColumnsAsync(AppDbContext db)
 {
     var connection = db.Database.GetDbConnection();
-    await connection.OpenAsync();
+    if (connection.State != System.Data.ConnectionState.Open)
+    {
+        await connection.OpenAsync();
+    }
 
     var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     await using (var command = connection.CreateCommand())
@@ -104,20 +171,17 @@ static async Task EnsureNewsColumnsAsync(AppDbContext db)
 
     var requiredColumns = new Dictionary<string, string>
     {
+        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["ExcerptSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["ContentSq"] = "TEXT NOT NULL DEFAULT ''",
         ["ThumbnailUrl"] = "TEXT NOT NULL DEFAULT ''",
         ["DocumentTitle"] = "TEXT NOT NULL DEFAULT ''",
+        ["DocumentTitleSq"] = "TEXT NOT NULL DEFAULT ''",
         ["DocumentUrl"] = "TEXT NOT NULL DEFAULT ''",
         ["GalleryJson"] = "TEXT NOT NULL DEFAULT '[]'"
     };
 
-    foreach (var (name, definition) in requiredColumns)
-    {
-        if (existingColumns.Contains(name)) continue;
-
-        await using var command = connection.CreateCommand();
-        command.CommandText = $"ALTER TABLE NewsItems ADD COLUMN {name} {definition}";
-        await command.ExecuteNonQueryAsync();
-    }
+    await AddMissingColumnsAsync(connection, "NewsItems", existingColumns, requiredColumns);
 }
 
 static async Task EnsureContentSectionColumnsAsync(AppDbContext db)
@@ -141,18 +205,69 @@ static async Task EnsureContentSectionColumnsAsync(AppDbContext db)
 
     var requiredColumns = new Dictionary<string, string>
     {
+        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
+        ["BodySq"] = "TEXT NOT NULL DEFAULT ''",
         ["DocumentTitle"] = "TEXT NOT NULL DEFAULT ''",
+        ["DocumentTitleSq"] = "TEXT NOT NULL DEFAULT ''",
         ["DocumentUrl"] = "TEXT NOT NULL DEFAULT ''"
     };
 
+    await AddMissingColumnsAsync(connection, "ContentSections", existingColumns, requiredColumns);
+}
+
+static async Task AddMissingColumnsAsync(
+    System.Data.Common.DbConnection connection,
+    string tableName,
+    HashSet<string> existingColumns,
+    Dictionary<string, string> requiredColumns)
+{
     foreach (var (name, definition) in requiredColumns)
     {
         if (existingColumns.Contains(name)) continue;
 
         await using var command = connection.CreateCommand();
-        command.CommandText = $"ALTER TABLE ContentSections ADD COLUMN {name} {definition}";
+        command.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {name} {definition}";
         await command.ExecuteNonQueryAsync();
     }
+}
+
+static async Task BackfillAlbanianContentAsync(AppDbContext db)
+{
+    await db.Database.ExecuteSqlRawAsync("""
+        UPDATE HomepageContents
+        SET
+            HeroEyebrowSq = CASE WHEN HeroEyebrowSq = '' THEN HeroEyebrow ELSE HeroEyebrowSq END,
+            HeroTitleSq = CASE WHEN HeroTitleSq = '' THEN HeroTitle ELSE HeroTitleSq END,
+            HeroSubtitleSq = CASE WHEN HeroSubtitleSq = '' THEN HeroSubtitle ELSE HeroSubtitleSq END,
+            HeroBodySq = CASE WHEN HeroBodySq = '' THEN HeroBody ELSE HeroBodySq END,
+            StatsSqJson = CASE WHEN StatsSqJson = '[]' THEN StatsJson ELSE StatsSqJson END,
+            FocusAreasSqJson = CASE WHEN FocusAreasSqJson = '[]' THEN FocusAreasJson ELSE FocusAreasSqJson END
+    """);
+
+    await db.Database.ExecuteSqlRawAsync("""
+        UPDATE ContentPages
+        SET
+            EyebrowSq = CASE WHEN EyebrowSq = '' THEN Eyebrow ELSE EyebrowSq END,
+            TitleSq = CASE WHEN TitleSq = '' THEN Title ELSE TitleSq END,
+            IntroSq = CASE WHEN IntroSq = '' THEN Intro ELSE IntroSq END
+    """);
+
+    await db.Database.ExecuteSqlRawAsync("""
+        UPDATE ContentSections
+        SET
+            TitleSq = CASE WHEN TitleSq = '' THEN Title ELSE TitleSq END,
+            BodySq = CASE WHEN BodySq = '' THEN Body ELSE BodySq END,
+            DocumentTitleSq = CASE WHEN DocumentTitleSq = '' THEN DocumentTitle ELSE DocumentTitleSq END
+    """);
+
+    await db.Database.ExecuteSqlRawAsync("""
+        UPDATE NewsItems
+        SET
+            TitleSq = CASE WHEN TitleSq = '' THEN Title ELSE TitleSq END,
+            ExcerptSq = CASE WHEN ExcerptSq = '' THEN Excerpt ELSE ExcerptSq END,
+            ContentSq = CASE WHEN ContentSq = '' THEN Content ELSE ContentSq END,
+            DocumentTitleSq = CASE WHEN DocumentTitleSq = '' THEN DocumentTitle ELSE DocumentTitleSq END
+    """);
 }
 
 static async Task MigrateDocumentUrlsAsync(AppDbContext db)
@@ -167,5 +282,17 @@ static async Task MigrateDocumentUrlsAsync(AppDbContext db)
         UPDATE ContentSections
         SET DocumentUrl = replace(DocumentUrl, '/assets/Downloadable%20Documents/', '/uploads/Documents/')
         WHERE DocumentUrl LIKE '/assets/Downloadable%20Documents/%'
+    """);
+
+    await db.Database.ExecuteSqlRawAsync("""
+        UPDATE ContentSections
+        SET
+            DocumentTitle = CASE
+                WHEN DocumentTitle = '' THEN 'ToR Microcredential Expert PDF'
+                ELSE DocumentTitle
+            END,
+            DocumentUrl = '/uploads/Documents/ToR-Microcredential-Expert-WB-Edu4Migration.pdf'
+        WHERE Title LIKE '%Microcredential Expert%'
+          AND (DocumentUrl IS NULL OR DocumentUrl = '')
     """);
 }

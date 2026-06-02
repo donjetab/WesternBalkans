@@ -43,10 +43,16 @@ public class SeedService(AppDbContext db, PasswordService passwords, IConfigurat
                 }),
                 PartnersJson = JsonSerializer.Serialize(new List<PartnerDto>
                 {
-                    new("AAB College", "Kosovo", "/assets/Partners/Kolegji AAB - No Bg.png"),
-                    new("University of Tirana", "Albania", "/assets/Partners/University-of-Tirana-Albania.jpg"),
-                    new("IBC-M", "Kosovo", "/assets/Partners/IBC-M.jpg"),
-                    new("Fehmi Agani University", "Kosovo", "/assets/Partners/fehmi agani.jpg")
+                    new("Kolegji AAB", "Kosovo", "/assets/Partners/Kolegji AAB - No Bg.png", "Coordinator", "https://aab-edu.net/"),
+                    new("International Business College Mitrovica", "Kosovo", "/assets/Partners/IBC-M.jpg", "Partner", "https://www.ibcmitrovica.eu/"),
+                    new("Universiteti Fehmi Agani Gjakove", "Kosovo", "/assets/Partners/fehmi agani.jpg", "Partner", "https://uni-gjk.org/"),
+                    new("University of Tirana", "Albania", "/assets/Partners/University-of-Tirana-Albania.jpg", "Partner", "https://unitir.edu.al/"),
+                    new("Barleti University", "Albania", "/assets/Partners/Barleti University (Albania).jpg", "Partner", "https://umb.edu.al/"),
+                    new("Logos University College", "Albania", "/assets/Partners/Logos University College (Albania).jpg", "Partner", "https://kulogos.edu.al/"),
+                    new("Institute for Research, Education, and Social Development", "Kosovo", "/assets/Partners/ireds.jpg", "Partner", "https://ireds.org/"),
+                    new("UCL University College", "Denmark", "/assets/Partners/UCL.jpg", "EU Partner", "https://www.ucl.dk/"),
+                    new("Fachhochschule Salzburg", "Austria", "/assets/Partners/Fachhochschule-Salzburg-Austria.jpg", "EU Partner", "https://www.fh-salzburg.ac.at/"),
+                    new("IULM University", "Italy", "/assets/Partners/IULM-University-Italy.jpg", "EU Partner", "https://www.iulm.it/")
                 })
             });
         }
@@ -60,7 +66,7 @@ public class SeedService(AppDbContext db, PasswordService passwords, IConfigurat
                     Excerpt = "Hosted at LOGOS University College in Tirana and AAB College in Prishtina, the conference focused on migration, resilience, psychosocial support, and inclusive institutional frameworks.",
                     Content = "The project gathered students, researchers, and practitioners to explore interdisciplinary responses to migration.",
                     PublishedAt = new DateTime(2026, 3, 30),
-                    ImageUrl = "/assets/total.jpg"
+                    ImageUrl = "/assets/Ardiani.jpg"
                 },
                 new NewsItem
                 {

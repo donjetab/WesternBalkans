@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowRight, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
+import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { resolveMediaUrl } from "../services/api.js";
 
 function shortenText(text = "", sentenceLimit = 4) {
@@ -15,12 +16,15 @@ function shortenText(text = "", sentenceLimit = 4) {
 }
 
 export function NewsCard({ item }) {
-  const date = item.publishedAt ? new Date(item.publishedAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }) : "Project update";
-  const excerpt = shortenText(item.excerpt, 4);
+  const { language, t } = useLanguage();
+  const locale = language === "sq" ? "sq-AL" : undefined;
+  const title = localized(item.title, item.titleSq, language);
+  const excerpt = shortenText(localized(item.excerpt, item.excerptSq, language), 4);
+  const date = item.publishedAt ? new Date(item.publishedAt).toLocaleDateString(locale, { month: "long", day: "numeric", year: "numeric" }) : t("projectUpdate");
   const image = item.thumbnailUrl || item.imageUrl;
 
   return (
-    <Link className="news-card news-card-link" to={`/news/${item.id}`} aria-label={`Read story: ${item.title}`}>
+    <Link className="news-card news-card-link" to={`/news/${item.id}`} aria-label={`${t("readStory")}: ${title}`}>
       <div className="news-image">
         {image ? <img src={resolveMediaUrl(image)} alt="" /> : <span>Edu4Migration</span>}
       </div>
@@ -29,10 +33,10 @@ export function NewsCard({ item }) {
           <CalendarDays size={16} />
           {date}
         </span>
-        <h3>{item.title}</h3>
+        <h3>{title}</h3>
         <p>{excerpt}</p>
         <span className="text-link">
-          Read story <ArrowRight size={16} />
+          {t("readStory")} <ArrowRight size={16} />
         </span>
       </div>
     </Link>

@@ -3,21 +3,49 @@ import { ArrowRight, BookOpen, Globe2, GraduationCap, Handshake, Landmark, Libra
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { NewsCard } from "../components/NewsCard.jsx";
+import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { homepageFallback, newsFallback, projectPartners } from "../data/fallbackContent.js";
-import { api } from "../services/api.js";
+import { api, resolveMediaUrl, withFallback } from "../services/api.js";
 
 const focusIcons = [BookOpen, GraduationCap, Handshake];
 const statIcons = [Landmark, Globe2, UsersRound, LibraryBig];
 
+function mergePartnerFallbacks(partners = []) {
+  const source = partners.length ? partners : projectPartners;
+
+  return source.map((partner) => {
+    const fallback = projectPartners.find((item) => item.name === partner.name)
+      || projectPartners.find((item) => item.logoUrl === partner.logoUrl)
+      || {};
+
+    return {
+      ...fallback,
+      ...partner,
+      role: partner.role || fallback.role || "Partner",
+      websiteUrl: partner.websiteUrl || fallback.websiteUrl || ""
+    };
+  });
+}
+
+function normalizePartnerWebsiteUrl(url = "") {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function Home() {
   const [home, setHome] = useState(homepageFallback);
   const [news, setNews] = useState(newsFallback);
+  const { language, t } = useLanguage();
+  const stats = language === "sq" && home.statsSq?.length ? home.statsSq : home.stats;
+  const focusAreas = language === "sq" && home.focusAreasSq?.length ? home.focusAreasSq : home.focusAreas;
 
   useEffect(() => {
     let active = true;
 
-    api.getHomepageFast(homepageFallback).then((data) => {
+    withFallback(api.getHomepage, homepageFallback).then((data) => {
       if (active) setHome(data);
     });
     api.getNewsFast(false, newsFallback).then((items) => {
@@ -31,21 +59,21 @@ export function Home() {
 
   return (
     <>
-      <section className="hero" style={{ backgroundImage: `linear-gradient(105deg, rgba(12,31,52,.96), rgba(6, 23, 43, 0.76) 42%, rgba(12,31,52,.18)), url("${home.heroImageUrl || "/assets/Ardiani.jpg"}")` }}>
+      <section className="hero" style={{ backgroundImage: `linear-gradient(105deg, rgba(12,31,52,.96), rgba(6, 23, 43, 0.76) 42%, rgba(12,31,52,.18)), url("${resolveMediaUrl(home.heroImageUrl || "/assets/Ardiani.jpg")}")` }}>
         <div className="hero-detail hero-rings" aria-hidden="true"></div>
         <div className="hero-detail hero-dots" aria-hidden="true"></div>
         <div className="container hero-grid">
           <div className="hero-copy">
-            <span className="eyebrow">{home.heroEyebrow}</span>
-            <h1 className="hero-title-line">{home.heroTitle}</h1>
-            <h2 className="hero-subtitle-line">{home.heroSubtitle}</h2>
-            <p>{home.heroBody}</p>
+            <span className="eyebrow">{localized(home.heroEyebrow, home.heroEyebrowSq, language)}</span>
+            <h1 className="hero-title-line">{localized(home.heroTitle, home.heroTitleSq, language)}</h1>
+            <h2 className="hero-subtitle-line">{localized(home.heroSubtitle, home.heroSubtitleSq, language)}</h2>
+            <p>{localized(home.heroBody, home.heroBodySq, language)}</p>
             <div className="hero-actions">
               <Link to="/overview" className="btn btn-primary">
-                Project Overview <ArrowRight size={18} />
+                {t("projectOverview")} <ArrowRight size={18} />
               </Link>
               <Link to="/news" className="btn btn-secondary">
-                Latest News
+                {t("latestNews")}
               </Link>
             </div>
           </div>
@@ -59,7 +87,7 @@ export function Home() {
 
       <section className="stats-band">
         <div className="container stats-grid">
-          {home.stats?.map((stat, index) => {
+          {stats?.map((stat, index) => {
             const Icon = statIcons[index] || Landmark;
             return (
             <article className="stat-item" key={stat.label}>
@@ -77,15 +105,15 @@ export function Home() {
       <SectionReveal className="section feature-section">
         <div className="container feature-section-inner">
           <div className="section-heading">
-            <span className="eyebrow dark">About the project</span>
-            <h2>Education, practice, and migration support connected in one platform</h2>
-            <p>Cleaner hierarchy, calmer spacing, and editable content make the project easier to maintain and easier for visitors to understand.</p>
+            <span className="eyebrow dark">{t("aboutProject")}</span>
+            <h2>{t("homeFeatureTitle")}</h2>
+            <p>{t("homeFeatureIntro")}</p>
             <Link to="/overview" className="btn btn-secondary dark about-link">
-              Learn More About the Project <ArrowRight size={17} />
+              {t("learnMoreAboutProject")} <ArrowRight size={17} />
             </Link>
           </div>
           <div className="feature-grid">
-            {home.focusAreas?.map((area, index) => {
+            {focusAreas?.map((area, index) => {
               const Icon = focusIcons[index] || BookOpen;
               return (
                 <article className="feature-card" key={area.title}>
@@ -103,10 +131,10 @@ export function Home() {
         <div className="container">
           <div className="section-heading split-heading">
             <div>
-              <span className="eyebrow dark">Latest activity</span>
-              <h2>News and project updates</h2>
+              <span className="eyebrow dark">{t("latestActivity")}</span>
+              <h2>{t("newsUpdates")}</h2>
             </div>
-            <Link className="btn btn-secondary dark" to="/news">View all news</Link>
+            <Link className="btn btn-secondary dark" to="/news">{t("viewAllNews")}</Link>
           </div>
           <div className="news-grid">
             {news.map((item) => <NewsCard item={item} key={item.id} />)}
@@ -117,20 +145,23 @@ export function Home() {
       <SectionReveal className="section partners-section">
         <div className="container">
           <div className="section-heading compact">
-            <span className="eyebrow dark">Consortium</span>
-            <h2>Project partners</h2>
+            <span className="eyebrow dark">{t("consortium")}</span>
+            <h2>{t("projectPartners")}</h2>
           </div>
           <div className="partners-row">
-            {projectPartners.map((partner) => (
+            {mergePartnerFallbacks(home.partners).map((partner) => (
               <a
                 className="partner-logo"
-                href={partner.websiteUrl}
+                href={normalizePartnerWebsiteUrl(partner.websiteUrl) || undefined}
                 key={partner.name}
-                target="_blank"
+                target={normalizePartnerWebsiteUrl(partner.websiteUrl) ? "_blank" : undefined}
                 rel="noreferrer"
+                onClick={(event) => {
+                  if (!normalizePartnerWebsiteUrl(partner.websiteUrl)) event.preventDefault();
+                }}
                 aria-label={`Open ${partner.name} website`}
               >
-                {partner.logoUrl ? <img src={partner.logoUrl} alt={partner.name} /> : null}
+                {partner.logoUrl ? <img src={resolveMediaUrl(partner.logoUrl)} alt={partner.name} /> : null}
                 <strong>{partner.name}</strong>
                 <span>{partner.country}</span>
               </a>
@@ -143,10 +174,10 @@ export function Home() {
         <div className="container cta-band-inner">
           <div className="cta-icon"><UsersRound size={32} /></div>
           <div>
-            <span className="eyebrow">Stay connected</span>
-            <h2>Follow project progress, training activities, and new learning resources.</h2>
+            <span className="eyebrow">{t("stayConnected")}</span>
+            <h2>{t("stayConnectedText")}</h2>
           </div>
-          <Link className="btn btn-primary" to="/contact">Contact Details</Link>
+          <Link className="btn btn-primary" to="/contact">{t("contactDetails")}</Link>
         </div>
       </section>
     </>
