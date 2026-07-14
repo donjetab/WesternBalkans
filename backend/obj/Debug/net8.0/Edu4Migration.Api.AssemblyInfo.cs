@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("5d51b4c3-1018-49fb-8bdc-4829bdba796f")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0afc3edec704cdddf0516be794b1915c57cf674d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e63dee765c18f485bf6ac94c026678e2a0d484e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

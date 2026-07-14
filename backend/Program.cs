@@ -19,13 +19,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys")));
 
+var defaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(defaultConnection))
+{
+    throw new InvalidOperationException("Database connection string is missing. Set ConnectionStrings:DefaultConnection with .NET User Secrets for development or ConnectionStrings__DefaultConnection in the server environment.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(defaultConnection));
 
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<SeedService>();
-builder.Services.AddScoped<DataMigrationService>();
 builder.Services.AddScoped<AuditService>();
 
 builder.Services.AddCors(options =>
@@ -36,7 +41,11 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key is missing.");
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException("JWT key is missing. Set it with .NET User Secrets for development or Jwt__Key in the server environment.");
+}
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -70,7 +79,6 @@ using (var scope = app.Services.CreateScope())
     await BackfillAlbanianContentAsync(db);
     await MigrateDocumentUrlsAsync(db);
     await scope.ServiceProvider.GetRequiredService<SeedService>().SeedAsync();
-    await PromoteSeedAdminAsync(db, scope.ServiceProvider.GetRequiredService<IConfiguration>());
 }
 
 if (app.Environment.IsDevelopment())
@@ -91,42 +99,6 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Temporary migration endpoint - REMOVE AFTER MIGRATION!
-if (app.Environment.IsDevelopment())
-{
-    app.MapPost("/admin/migrate-sqlite-to-sqlserver", async (
-        IServiceProvider serviceProvider,
-        ILogger<Program> logger) =>
-    {
-        try
-        {
-            logger.LogWarning("⚠️  Starting SQLite to SQL Server data migration...");
-            
-            // Create temporary SQLite context
-            var sqliteOptions = new DbContextOptionsBuilder<AppDbContext>()
-                .UseSqlite("Data Source=edu4migration.db;")
-                .Options;
-            
-            using var sqliteContext = new AppDbContext(sqliteOptions);
-            var sqlServerContext = serviceProvider.GetRequiredService<AppDbContext>();
-            var dataMigrationService = new DataMigrationService(
-                sqliteContext,
-                sqlServerContext,
-                serviceProvider.GetRequiredService<ILogger<DataMigrationService>>());
-            
-            await dataMigrationService.MigrateAllDataAsync();
-            
-            logger.LogInformation("✅ Migration completed successfully!");
-            return Results.Ok(new { message = "✅ Migration completed successfully! Data has been transferred from SQLite to SQL Server." });
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "❌ Migration failed: {Message}", ex.Message);
-            return Results.BadRequest(new { error = "Migration failed", details = ex.Message });
-        }
-    }).WithName("MigrateSqliteToSqlServer").Produces(200).Produces(400);
-}
-
 app.MapControllers();
 
 app.Run();
@@ -141,16 +113,6 @@ static async Task EnsureAdminUserColumnsAsync(AppDbContext db)
     };
 
     await AddMissingColumnsAsync(db.Database.GetDbConnection(), "AdminUsers", existingColumns, requiredColumns);
-}
-
-static async Task PromoteSeedAdminAsync(AppDbContext db, IConfiguration configuration)
-{
-    var seedEmail = configuration["AdminSeed:Email"] ?? "admin@edu4migration.local";
-    var user = await db.AdminUsers.SingleOrDefaultAsync(admin => admin.Email == seedEmail);
-    if (user is null || user.Role == "MainAdmin") return;
-
-    user.Role = "MainAdmin";
-    await db.SaveChangesAsync();
 }
 
 static async Task EnsureAuditLogsTableAsync(AppDbContext db)

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Frontend build output
+frontend/dist/
+
+# .NET build output
+**/bin/
+**/obj/
+backend/build-check/
+
+# Local databases and runtime files
+backend/*.db
+backend/*.db-*
+backend/DataProtectionKeys/
+backend/*.log
+
+# Environment/local config
+.env
+.env.*
+*.user
+*.suo
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

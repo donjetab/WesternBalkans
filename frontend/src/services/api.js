@@ -2,7 +2,6 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5088/api";
 const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 const TOKEN_KEY = "edu4migration_admin_token";
 const ADMIN_USER_KEY = "edu4migration_admin_user";
-const PUBLIC_REQUEST_TIMEOUT = 900;
 const cache = new Map();
 
 export function getToken() {
@@ -79,18 +78,14 @@ async function request(path, options = {}) {
   return response.json();
 }
 
-async function cachedPublicRequest(path, fallback) {
+async function cachedPublicRequest(path) {
   if (cache.has(path)) {
     return cache.get(path);
   }
 
-  try {
-    const data = await request(path, { timeout: PUBLIC_REQUEST_TIMEOUT });
-    cache.set(path, data);
-    return data;
-  } catch {
-    return fallback;
-  }
+  const data = await request(path);
+  cache.set(path, data);
+  return data;
 }
 
 function clearNewsCache(id) {
@@ -120,25 +115,24 @@ export const api = {
   deleteAdminUser: (id) => request(`/adminusers/${id}`, { method: "DELETE" }),
   changePassword: (currentPassword, newPassword) => request("/adminusers/change-password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
   getHomepage: () => request("/content/homepage"),
-  getHomepageFast: (fallback) => cachedPublicRequest("/content/homepage", fallback),
+  getHomepageFast: () => cachedPublicRequest("/content/homepage"),
   updateHomepage: async (payload) => {
     const data = await request("/content/homepage", { method: "PUT", body: JSON.stringify(payload) });
     cache.delete("/content/homepage");
     return data;
   },
   getPage: (slug) => request(`/content/pages/${slug}`),
-  getPageFast: (slug, fallback) => cachedPublicRequest(`/content/pages/${slug}`, fallback),
+  getPageFast: (slug) => cachedPublicRequest(`/content/pages/${slug}`),
   updatePage: async (slug, payload) => {
     const data = await request(`/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(payload) });
     cache.delete(`/content/pages/${slug}`);
     return data;
   },
   getNews: (includeDrafts = false) => request(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
-  getNewsFast: (includeDrafts = false, fallback = []) => cachedPublicRequest(`/news${includeDrafts ? "?includeDrafts=true" : ""}`, fallback),
-  getNewsItemFast: async (id, fallbackItems = []) => {
-    const fallback = fallbackItems.find((item) => String(item.id) === String(id));
-    if (!id) return fallback;
-    return cachedPublicRequest(`/news/${id}`, fallback);
+  getNewsFast: (includeDrafts = false) => cachedPublicRequest(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
+  getNewsItemFast: async (id) => {
+    if (!id) return null;
+    return cachedPublicRequest(`/news/${id}`);
   },
   createNews: async (payload) => {
     const data = await request("/news", { method: "POST", body: JSON.stringify(payload) });
@@ -176,11 +170,3 @@ export const api = {
   deleteMedia: (id) => request(`/media/${id}`, { method: "DELETE" }),
   deleteMediaByUrl: (url) => request(`/media?url=${encodeURIComponent(url)}`, { method: "DELETE" })
 };
-
-export async function withFallback(fetcher, fallback) {
-  try {
-    return await fetcher();
-  } catch {
-    return fallback;
-  }
-}

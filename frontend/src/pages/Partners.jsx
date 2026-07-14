@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { homepageFallback } from "../data/fallbackContent.js";
-import { api, resolveMediaUrl, withFallback } from "../services/api.js";
+import { api, resolveMediaUrl } from "../services/api.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.jsx";
 
 function normalizePartnerWebsiteUrl(url = "") {
@@ -15,7 +14,7 @@ function normalizePartnerWebsiteUrl(url = "") {
 }
 
 export function Partners() {
-  const [partners, setPartners] = useState(homepageFallback.partners || []);
+  const [partners, setPartners] = useState([]);
   const { t } = useLanguage();
 
   useDocumentTitle(t("projectPartners") || "Project Partners");
@@ -23,10 +22,10 @@ export function Partners() {
   useEffect(() => {
     let active = true;
 
-    withFallback(api.getHomepage, homepageFallback).then((data) => {
+    api.getHomepage().then((data) => {
       if (!active) return;
-      setPartners(Array.isArray(data.partners) ? data.partners : homepageFallback.partners || []);
-    });
+      setPartners(Array.isArray(data.partners) ? data.partners : []);
+    }).catch(() => {});
 
     return () => {
       active = false;

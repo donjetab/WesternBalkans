@@ -1,50 +1,52 @@
 import React from "react";
 import { ArrowLeft, CalendarDays, Download, FileText } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
-import { newsFallback } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl } from "../services/api.js";
 import { getNewsPath, isNumericNewsParam, slugifyNewsTitle } from "../utils/newsUrls.js";
+
+const emptyNewsDetail = {
+  title: "",
+  titleSq: "",
+  excerpt: "",
+  excerptSq: "",
+  content: "",
+  contentSq: "",
+  gallery: []
+};
 
 export function NewsDetail() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const { language, t } = useLanguage();
-  const fallbackItem = useMemo(() => {
-    if (isNumericNewsParam(id)) {
-      return newsFallback.find((item) => String(item.id) === String(id)) || newsFallback[0];
-    }
-
-    return newsFallback.find((item) => slugifyNewsTitle(item.title || item.titleSq) === id) || newsFallback[0];
-  }, [id]);
-  const [item, setItem] = useState(fallbackItem);
+  const [item, setItem] = useState(emptyNewsDetail);
   const [selectedPicture, setSelectedPicture] = useState(null);
 
   useEffect(() => {
-    setItem(fallbackItem);
+    setItem(emptyNewsDetail);
     let active = true;
 
     if (isNumericNewsParam(id)) {
-      api.getNewsItemFast(id, newsFallback).then((data) => {
+      api.getNewsItemFast(id).then((data) => {
         if (!active || !data) return;
         setItem(data);
         navigate(getNewsPath(data), { replace: true });
-      });
+      }).catch(() => {});
     } else {
-      api.getNewsFast(false, newsFallback).then((items) => {
+      api.getNewsFast(false).then((items) => {
         if (!active) return;
         const match = items.find((newsItem) => slugifyNewsTitle(newsItem.title || newsItem.titleSq) === id);
         if (match) setItem(match);
-      });
+      }).catch(() => {});
     }
 
     return () => {
       active = false;
     };
-  }, [fallbackItem, id, navigate]);
+  }, [id, navigate]);
 
   useEffect(() => {
     if (!selectedPicture) return undefined;

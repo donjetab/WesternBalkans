@@ -4,53 +4,41 @@ import { BookOpen, Download, Globe2, GraduationCap, Landmark, UsersRound } from 
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
-import { homepageFallback, pagesFallback } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl } from "../services/api.js";
 
 const overviewIcons = [UsersRound, BookOpen, GraduationCap];
 const impactIcons = [Landmark, Globe2, UsersRound, BookOpen];
 const contentIcons = [GraduationCap, UsersRound, BookOpen, Globe2, Landmark];
 
-function mergeDownloadDocuments(page, fallback) {
-  if (!page || page.slug !== "downloads") return page;
+const emptyPage = {
+  eyebrow: "",
+  eyebrowSq: "",
+  title: "",
+  titleSq: "",
+  intro: "",
+  introSq: "",
+  sections: []
+};
 
-  const fallbackSections = fallback?.sections || [];
-  const sections = page.sections?.map((section) => {
-    if (section.documentUrl) return section;
-
-    const fallbackSection = fallbackSections.find((item) => item.title === section.title);
-    return fallbackSection?.documentUrl
-      ? {
-          ...section,
-          documentTitle: section.documentTitle || fallbackSection.documentTitle,
-          documentUrl: fallbackSection.documentUrl
-        }
-      : section;
-  }) || fallbackSections;
-
-  const hasDocuments = sections.some((section) => section.documentUrl);
-
-  return {
-    ...page,
-    sections: hasDocuments ? sections : fallbackSections
-  };
-}
+const emptyHomepage = {
+  stats: [],
+  statsSq: []
+};
 
 export function ContentPage({ slug }) {
-  const [page, setPage] = useState(pagesFallback[slug]);
+  const [page, setPage] = useState({ ...emptyPage, slug });
   const { language, t } = useLanguage();
   const isEventsPage = slug === "events";
   const isOverviewPage = slug === "overview";
   const isDownloadsPage = slug === "downloads";
 
   useEffect(() => {
-    const fallback = pagesFallback[slug];
-    setPage(fallback);
+    setPage({ ...emptyPage, slug });
     let active = true;
 
-    api.getPageFast(slug, fallback).then((data) => {
-      if (active) setPage(mergeDownloadDocuments(data, fallback));
-    });
+    api.getPageFast(slug).then((data) => {
+      if (active) setPage({ ...emptyPage, ...data });
+    }).catch(() => {});
 
     return () => {
       active = false;
@@ -99,7 +87,7 @@ export function ContentPage({ slug }) {
 }
 
 function ProjectOverviewPage({ page }) {
-  const [homepage, setHomepage] = useState(homepageFallback);
+  const [homepage, setHomepage] = useState(emptyHomepage);
   const { language, t } = useLanguage();
   const stats = language === "sq" && homepage.statsSq?.length ? homepage.statsSq : homepage.stats;
 
@@ -108,9 +96,7 @@ function ProjectOverviewPage({ page }) {
 
     api.getHomepage().then((data) => {
       if (active) setHomepage(data);
-    }).catch(() => {
-      if (active) setHomepage(homepageFallback);
-    });
+    }).catch(() => {});
 
     return () => {
       active = false;
@@ -147,7 +133,7 @@ function ProjectOverviewPage({ page }) {
         <div className="container overview-impact">
           <h2>{t("projectImpact")}</h2>
           <div className="overview-impact-grid">
-            {(stats || homepageFallback.stats).map((stat, index) => {
+            {(stats || []).map((stat, index) => {
               const Icon = impactIcons[index] || Landmark;
               return (
                 <article className="overview-impact-item" key={stat.label}>

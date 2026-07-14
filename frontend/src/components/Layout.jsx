@@ -3,7 +3,7 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { navItems } from "../data/fallbackContent.js";
+import { navItems } from "../data/siteStructure.js";
 
 export function Layout() {
   const [open, setOpen] = useState(false);

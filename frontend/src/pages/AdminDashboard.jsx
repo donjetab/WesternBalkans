@@ -2,8 +2,25 @@ import React from "react";
 import { AlertCircle, ArrowLeft, Bold, CalendarDays, CheckCircle2, ChevronDown, Eye, EyeOff, FileText, GripVertical, History, Home, Italic, Link2, Lock, LogOut, Menu, Newspaper, Plus, Save, Star, Trash2, Unlock, UserRound, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { homepageFallback, navItems, newsFallback, pagesFallback, projectPartners } from "../data/fallbackContent.js";
-import { api, clearToken, getStoredAdmin, resolveMediaUrl, withFallback } from "../services/api.js";
+import { navItems } from "../data/siteStructure.js";
+import { api, clearToken, getStoredAdmin, resolveMediaUrl } from "../services/api.js";
+
+const emptyHome = {
+  heroEyebrow: "",
+  heroEyebrowSq: "",
+  heroTitle: "",
+  heroTitleSq: "",
+  heroSubtitle: "",
+  heroSubtitleSq: "",
+  heroBody: "",
+  heroBodySq: "",
+  heroImageUrl: "",
+  stats: [],
+  statsSq: [],
+  focusAreas: [],
+  focusAreasSq: [],
+  partners: []
+};
 
 const emptyNews = {
   title: "",
@@ -500,23 +517,6 @@ function ensureLocalizedList(primary = [], localized = []) {
   return primary.map((item, index) => ({ ...item, ...(localized[index] || {}) }));
 }
 
-function mergePartnerFallbacks(partners = []) {
-  const source = partners.length ? partners : projectPartners;
-
-  return source.map((partner) => {
-    const fallback = projectPartners.find((item) => item.name === partner.name)
-      || projectPartners.find((item) => item.logoUrl === partner.logoUrl)
-      || {};
-
-    return {
-      ...fallback,
-      ...partner,
-      role: partner.role || fallback.role || "Partner",
-      websiteUrl: partner.websiteUrl || fallback.websiteUrl || ""
-    };
-  });
-}
-
 function normalizePartnerWebsiteUrl(url = "") {
   const trimmed = url.trim();
   if (!trimmed) return "";
@@ -609,9 +609,9 @@ export function AdminDashboard() {
   const isMainAdmin = currentAdmin.role === "MainAdmin";
   const pageGroups = useMemo(() => groupPageLinks(pageLinks, isMainAdmin), [isMainAdmin, pageLinks]);
   const [selectedSlug, setSelectedSlug] = useState("home");
-  const [home, setHome] = useState(homepageFallback);
+  const [home, setHome] = useState(emptyHome);
   const [editablePage, setEditablePage] = useState(null);
-  const [news, setNews] = useState(newsFallback);
+  const [news, setNews] = useState([]);
   const [adminUsers, setAdminUsers] = useState([]);
   const [userDraft, setUserDraft] = useState(emptyAdminUser);
   const [draft, setDraft] = useState(emptyNews);
@@ -636,15 +636,16 @@ export function AdminDashboard() {
         navigate("/admin/login", { replace: true });
       });
 
-    withFallback(api.getHomepage, homepageFallback).then((data) => {
+    api.getHomepage().then((data) => {
       setHome({
+        ...emptyHome,
         ...data,
-        statsSq: ensureLocalizedList(data.stats || homepageFallback.stats, data.statsSq),
-        focusAreasSq: ensureLocalizedList(data.focusAreas || homepageFallback.focusAreas, data.focusAreasSq),
-        partners: mergePartnerFallbacks(data.partners)
+        statsSq: ensureLocalizedList(data.stats || [], data.statsSq),
+        focusAreasSq: ensureLocalizedList(data.focusAreas || [], data.focusAreasSq),
+        partners: data.partners || []
       });
-    });
-    withFallback(() => api.getNews(true), newsFallback).then(setNews);
+    }).catch(() => {});
+    api.getNews(true).then(setNews).catch(() => {});
   }, [navigate]);
 
   useEffect(() => {
@@ -656,11 +657,10 @@ export function AdminDashboard() {
   useEffect(() => {
     if (selectedSlug === "home" || selectedSlug === "news" || selectedSlug === "users" || selectedSlug === "changes") return;
 
-    const fallback = pagesFallback[selectedSlug] || createFallbackPage(selectedSlug);
-    setEditablePage({ slug: selectedSlug, ...fallback });
-    withFallback(() => api.getPage(selectedSlug), fallback).then((page) => {
-      setEditablePage({ slug: selectedSlug, ...page });
-    });
+    setEditablePage(createFallbackPage(selectedSlug));
+    api.getPage(selectedSlug).then((page) => {
+      setEditablePage({ ...createFallbackPage(selectedSlug), ...page });
+    }).catch(() => {});
   }, [selectedSlug]);
 
   useEffect(() => {
@@ -747,7 +747,7 @@ export function AdminDashboard() {
   function updateHomePartner(index, field, value) {
     setHome((current) => ({
       ...current,
-      partners: mergePartnerFallbacks(current.partners).map((partner, partnerIndex) => (
+      partners: (current.partners || []).map((partner, partnerIndex) => (
         partnerIndex === index ? { ...partner, [field]: value } : partner
       ))
     }));
@@ -806,10 +806,10 @@ export function AdminDashboard() {
 
   async function uploadPartnerLogo(index, file) {
     if (!file) return;
-    const partner = mergePartnerFallbacks(home.partners)[index];
+    const partner = (home.partners || [])[index];
     const previousLogoUrl = partner?.logoUrl;
     const asset = await api.uploadMedia(file, partner?.name || "Partner logo", { folder: "Partners" });
-    const partners = mergePartnerFallbacks(home.partners).map((item, partnerIndex) => (
+    const partners = (home.partners || []).map((item, partnerIndex) => (
       partnerIndex === index ? { ...item, logoUrl: asset.url } : item
     ));
     const nextHome = { ...home, partners };

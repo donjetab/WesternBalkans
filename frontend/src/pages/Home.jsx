@@ -5,29 +5,24 @@ import { useEffect, useState } from "react";
 import { NewsCard } from "../components/NewsCard.jsx";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
-import { homepageFallback, newsFallback, projectPartners } from "../data/fallbackContent.js";
-import { api, resolveMediaUrl, withFallback } from "../services/api.js";
+import { api, resolveMediaUrl } from "../services/api.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.jsx";
 
 const focusIcons = [BookOpen, GraduationCap, Handshake];
 const statIcons = [Landmark, Globe2, UsersRound, LibraryBig];
 
-function mergePartnerFallbacks(partners = []) {
-  const source = partners.length ? partners : projectPartners;
-
-  return source.map((partner) => {
-    const fallback = projectPartners.find((item) => item.name === partner.name)
-      || projectPartners.find((item) => item.logoUrl === partner.logoUrl)
-      || {};
-
-    return {
-      ...fallback,
-      ...partner,
-      role: partner.role || fallback.role || "Partner",
-      websiteUrl: partner.websiteUrl || fallback.websiteUrl || ""
-    };
-  });
-}
+const emptyHome = {
+  heroEyebrow: "",
+  heroTitle: "",
+  heroSubtitle: "",
+  heroBody: "",
+  heroImageUrl: "",
+  stats: [],
+  statsSq: [],
+  focusAreas: [],
+  focusAreasSq: [],
+  partners: []
+};
 
 function normalizePartnerWebsiteUrl(url = "") {
   const trimmed = url.trim();
@@ -37,8 +32,8 @@ function normalizePartnerWebsiteUrl(url = "") {
 }
 
 export function Home() {
-  const [home, setHome] = useState(homepageFallback);
-  const [news, setNews] = useState(newsFallback);
+  const [home, setHome] = useState(emptyHome);
+  const [news, setNews] = useState([]);
   const { language, t } = useLanguage();
   const stats = language === "sq" && home.statsSq?.length ? home.statsSq : home.stats;
   const focusAreas = language === "sq" && home.focusAreasSq?.length ? home.focusAreasSq : home.focusAreas;
@@ -49,12 +44,12 @@ export function Home() {
   useEffect(() => {
     let active = true;
 
-    withFallback(api.getHomepage, homepageFallback).then((data) => {
+    api.getHomepage().then((data) => {
       if (active) setHome(data);
-    });
-    api.getNewsFast(false, newsFallback).then((items) => {
+    }).catch(() => {});
+    api.getNewsFast(false).then((items) => {
       if (active) setNews(items.slice(0, 3));
-    });
+    }).catch(() => {});
 
     return () => {
       active = false;
@@ -63,7 +58,7 @@ export function Home() {
 
   return (
     <>
-      <section className="hero" style={{ backgroundImage: `linear-gradient(105deg, rgba(12,31,52,.96), rgba(6, 23, 43, 0.76) 42%, rgba(12,31,52,.18)), url("${resolveMediaUrl(home.heroImageUrl || "/assets/Ardiani.jpg")}")` }}>
+      <section className="hero" style={{ backgroundImage: `linear-gradient(105deg, rgba(12,31,52,.96), rgba(6, 23, 43, 0.76) 42%, rgba(12,31,52,.18)), url("${resolveMediaUrl(home.heroImageUrl)}")` }}>
         <div className="hero-detail hero-rings" aria-hidden="true"></div>
         <div className="hero-detail hero-dots" aria-hidden="true"></div>
         <div className="container hero-grid">
@@ -153,7 +148,7 @@ export function Home() {
             <h2>{t("projectPartners")}</h2>
           </div>
           <div className="partners-row">
-            {mergePartnerFallbacks(home.partners).map((partner) => (
+            {(home.partners || []).map((partner) => (
               <a
                 className="partner-logo"
                 href={normalizePartnerWebsiteUrl(partner.websiteUrl) || undefined}

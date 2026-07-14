@@ -6,28 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Edu4Migration.Api.Services;
 
-public class SeedService(AppDbContext db, PasswordService passwords, IConfiguration configuration)
+public class SeedService(AppDbContext db)
 {
     public async Task SeedAsync()
     {
-        var seedPassword = configuration["AdminSeed:Password"];
-        var seedEmail = configuration["AdminSeed:Email"];
-        var hasSeedUser = !string.IsNullOrEmpty(seedEmail) && await db.AdminUsers.AnyAsync(user => user.Email == seedEmail);
-
-        if (!hasSeedUser)
-        {
-            // Only seed when both email and password are explicitly provided in configuration
-            if (!string.IsNullOrEmpty(seedPassword) && !string.IsNullOrEmpty(seedEmail))
-            {
-                db.AdminUsers.Add(new AdminUser
-                {
-                    Email = seedEmail,
-                    PasswordHash = passwords.Hash(seedPassword),
-                    Role = "MainAdmin"
-                });
-            }
-        }
-
         if (!await db.HomepageContents.AnyAsync())
         {
             db.HomepageContents.Add(new HomepageContent

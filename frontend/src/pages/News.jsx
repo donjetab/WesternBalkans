@@ -4,18 +4,17 @@ import { NewsCard } from "../components/NewsCard.jsx";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { newsFallback } from "../data/fallbackContent.js";
 import { api } from "../services/api.js";
 
 export function News() {
-  const [news, setNews] = useState(newsFallback);
+  const [news, setNews] = useState([]);
   const { t } = useLanguage();
 
   useEffect(() => {
     let active = true;
-    api.getNewsFast(false, newsFallback).then((items) => {
+    api.getNewsFast(false).then((items) => {
       if (active) setNews(items);
-    });
+    }).catch(() => {});
     return () => {
       active = false;
     };

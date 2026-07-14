@@ -4,8 +4,17 @@ import { Mail, MapPin, UserRound } from "lucide-react";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
-import { pagesFallback } from "../data/fallbackContent.js";
 import { api } from "../services/api.js";
+
+const emptyContactPage = {
+  eyebrow: "",
+  eyebrowSq: "",
+  title: "",
+  titleSq: "",
+  intro: "",
+  introSq: "",
+  sections: []
+};
 
 function getContactDetails(section, language) {
   const body = localized(section.body, section.bodySq, language);
@@ -20,17 +29,16 @@ function getContactDetails(section, language) {
 }
 
 export function Contact() {
-  const [page, setPage] = useState(pagesFallback.contact);
+  const [page, setPage] = useState(emptyContactPage);
   const { language } = useLanguage();
 
   useEffect(() => {
-    const fallback = pagesFallback.contact;
-    setPage(fallback);
+    setPage(emptyContactPage);
     let active = true;
 
-    api.getPageFast("contact", fallback).then((data) => {
-      if (active) setPage(data);
-    });
+    api.getPageFast("contact").then((data) => {
+      if (active) setPage({ ...emptyContactPage, ...data });
+    }).catch(() => {});
 
     return () => {
       active = false;
