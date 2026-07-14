@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Edu4Migration.Api.Data;
 using Edu4Migration.Api.DTOs;
 using Edu4Migration.Api.Models;
+using Edu4Migration.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +12,16 @@ namespace Edu4Migration.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class NewsController(AppDbContext db) : ControllerBase
+public class NewsController(AppDbContext db, AuditService audit) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<List<NewsDto>>> GetNews([FromQuery] bool includeDrafts = false)
     {
+        if (includeDrafts && User.Identity?.IsAuthenticated != true)
+        {
+            return Unauthorized();
+        }
+
         var query = db.NewsItems.AsQueryable();
         if (!includeDrafts)
         {
@@ -29,11 +36,21 @@ public class NewsController(AppDbContext db) : ControllerBase
     public async Task<ActionResult<NewsDto>> GetNewsItem(int id)
     {
         var item = await db.NewsItems.FindAsync(id);
-        return item is null ? NotFound() : Ok(ToDto(item));
+        if (item is null)
+        {
+            return NotFound();
+        }
+
+        if ((!item.IsPublished || item.PublishedAt > DateTime.UtcNow.AddDays(1)) && User.Identity?.IsAuthenticated != true)
+        {
+            return NotFound();
+        }
+
+        return Ok(ToDto(item));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<ActionResult<NewsDto>> CreateNews(UpsertNewsRequest request)
     {
         var item = new NewsItem
@@ -49,18 +66,19 @@ public class NewsController(AppDbContext db) : ControllerBase
             DocumentTitle = request.DocumentTitle,
             DocumentTitleSq = request.DocumentTitleSq,
             DocumentUrl = request.DocumentUrl,
-            GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []),
+            GalleryJson = JsonSerializer.Serialize(request.Gallery ?? new List<string>()),
             PublishedAt = request.PublishedAt,
             IsPublished = request.IsPublished
         };
 
         db.NewsItems.Add(item);
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "News", "Created", item.Title);
         return CreatedAtAction(nameof(GetNewsItem), new { id = item.Id }, ToDto(item));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<ActionResult<NewsDto>> UpdateNews(int id, UpsertNewsRequest request)
     {
         var item = await db.NewsItems.FindAsync(id);
@@ -80,17 +98,18 @@ public class NewsController(AppDbContext db) : ControllerBase
         item.DocumentTitle = request.DocumentTitle;
         item.DocumentTitleSq = request.DocumentTitleSq;
         item.DocumentUrl = request.DocumentUrl;
-        item.GalleryJson = JsonSerializer.Serialize(request.Gallery ?? []);
+        item.GalleryJson = JsonSerializer.Serialize(request.Gallery ?? new List<string>());
         item.PublishedAt = request.PublishedAt;
         item.IsPublished = request.IsPublished;
         item.UpdatedAt = DateTime.UtcNow;
 
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "News", "Updated", item.Title);
         return Ok(ToDto(item));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<IActionResult> DeleteNews(int id)
     {
         var item = await db.NewsItems.FindAsync(id);
@@ -101,7 +120,19 @@ public class NewsController(AppDbContext db) : ControllerBase
 
         db.NewsItems.Remove(item);
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "News", "Deleted", item.Title);
         return NoContent();
+    }
+
+    private int GetCurrentUserId()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(id, out var parsed) ? parsed : 0;
+    }
+
+    private string GetCurrentEmail()
+    {
+        return User.FindFirstValue(ClaimTypes.Email) ?? "system";
     }
 
     private static NewsDto ToDto(NewsItem item)
@@ -128,11 +159,11 @@ public class NewsController(AppDbContext db) : ControllerBase
     {
         try
         {
-            return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+            return JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
         }
         catch
         {
-            return [];
+            return new List<string>();
         }
     }
 }

@@ -10,13 +10,22 @@ public class SeedService(AppDbContext db, PasswordService passwords, IConfigurat
 {
     public async Task SeedAsync()
     {
-        if (!await db.AdminUsers.AnyAsync())
+        var seedPassword = configuration["AdminSeed:Password"];
+        var seedEmail = configuration["AdminSeed:Email"];
+        var hasSeedUser = !string.IsNullOrEmpty(seedEmail) && await db.AdminUsers.AnyAsync(user => user.Email == seedEmail);
+
+        if (!hasSeedUser)
         {
-            db.AdminUsers.Add(new AdminUser
+            // Only seed when both email and password are explicitly provided in configuration
+            if (!string.IsNullOrEmpty(seedPassword) && !string.IsNullOrEmpty(seedEmail))
             {
-                Email = configuration["AdminSeed:Email"] ?? "admin@edu4migration.local",
-                PasswordHash = passwords.Hash(configuration["AdminSeed:Password"] ?? "ChangeMe123!")
-            });
+                db.AdminUsers.Add(new AdminUser
+                {
+                    Email = seedEmail,
+                    PasswordHash = passwords.Hash(seedPassword),
+                    Role = "MainAdmin"
+                });
+            }
         }
 
         if (!await db.HomepageContents.AnyAsync())

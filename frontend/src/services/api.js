@@ -1,6 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5088/api";
 const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 const TOKEN_KEY = "edu4migration_admin_token";
+const ADMIN_USER_KEY = "edu4migration_admin_user";
 const PUBLIC_REQUEST_TIMEOUT = 900;
 const cache = new Map();
 
@@ -12,8 +13,30 @@ export function setToken(token) {
   localStorage.setItem(TOKEN_KEY, token);
 }
 
+export function setSession(session) {
+  setToken(session.token);
+  const username = session.username || session.email || "";
+  localStorage.setItem(ADMIN_USER_KEY, JSON.stringify({
+    id: session.id,
+    email: session.email,
+    username,
+    role: session.role,
+    initials: session.initials
+  }));
+}
+
 export function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(ADMIN_USER_KEY);
+}
+
+export function getStoredAdmin() {
+  try {
+    const admin = JSON.parse(localStorage.getItem(ADMIN_USER_KEY) || "{}");
+    return { ...admin, username: admin.username || admin.email || "", initials: admin.initials || "" };
+  } catch {
+    return {};
+  }
 }
 
 export function resolveMediaUrl(url = "") {
@@ -70,8 +93,32 @@ async function cachedPublicRequest(path, fallback) {
   }
 }
 
+function clearNewsCache(id) {
+  cache.delete("/news");
+  cache.delete("/news?includeDrafts=true");
+  if (id !== undefined && id !== null) {
+    cache.delete(`/news/${id}`);
+  }
+}
+
 export const api = {
-  login: (email, password) => request("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+  login: (username, password) => request("/auth/login", { method: "POST", body: JSON.stringify({ email: username, password }) }),
+  getCurrentUser: () => request("/adminusers/me"),
+  getRecentChanges: (take = 20) => request(`/audit/recent?take=${take}`),
+  getAuditChanges: ({ page = 1, pageSize = 10, search = "", date = "" } = {}) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      pageSize: String(pageSize)
+    });
+    if (search.trim()) params.set("search", search.trim());
+    if (date) params.set("date", date);
+    return request(`/audit?${params.toString()}`);
+  },
+  getAdminUsers: () => request("/adminusers"),
+  createAdminUser: (payload) => request("/adminusers", { method: "POST", body: JSON.stringify(payload) }),
+  updateAdminUser: (id, payload) => request(`/adminusers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+  deleteAdminUser: (id) => request(`/adminusers/${id}`, { method: "DELETE" }),
+  changePassword: (currentPassword, newPassword) => request("/adminusers/change-password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
   getHomepage: () => request("/content/homepage"),
   getHomepageFast: (fallback) => cachedPublicRequest("/content/homepage", fallback),
   updateHomepage: async (payload) => {
@@ -93,9 +140,21 @@ export const api = {
     if (!id) return fallback;
     return cachedPublicRequest(`/news/${id}`, fallback);
   },
-  createNews: (payload) => request("/news", { method: "POST", body: JSON.stringify(payload) }),
-  updateNews: (id, payload) => request(`/news/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
-  deleteNews: (id) => request(`/news/${id}`, { method: "DELETE" }),
+  createNews: async (payload) => {
+    const data = await request("/news", { method: "POST", body: JSON.stringify(payload) });
+    clearNewsCache(data?.id);
+    return data;
+  },
+  updateNews: async (id, payload) => {
+    const data = await request(`/news/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+    clearNewsCache(id);
+    return data;
+  },
+  deleteNews: async (id) => {
+    const data = await request(`/news/${id}`, { method: "DELETE" });
+    clearNewsCache(id);
+    return data;
+  },
   getMedia: () => request("/media"),
   uploadMedia: async (file, altText = "", options = {}) => {
     const token = getToken();

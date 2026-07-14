@@ -13,8 +13,8 @@ namespace Edu4Migration.Api.Controllers;
 [Route("api/[controller]")]
 public class MediaController(AppDbContext db, IWebHostEnvironment environment) : ControllerBase
 {
-    [Authorize(Roles = "Admin")]
     [HttpPost("upload")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     [RequestSizeLimit(10_000_000)]
     public async Task<ActionResult<MediaAsset>> Upload(
         IFormFile file,
@@ -66,8 +66,8 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         return Ok(asset);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<IActionResult> DeleteAsset(int id)
     {
         var asset = await db.MediaAssets.FindAsync(id);
@@ -82,8 +82,8 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         return NoContent();
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpDelete]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<IActionResult> DeleteAssetByUrl([FromQuery] string url)
     {
         var asset = await db.MediaAssets.SingleOrDefaultAsync(item => item.Url == url);
@@ -98,7 +98,7 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         return NoContent();
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     [HttpGet]
     public async Task<ActionResult<List<MediaAsset>>> GetAssets()
     {

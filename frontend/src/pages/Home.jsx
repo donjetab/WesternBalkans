@@ -7,6 +7,7 @@ import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { homepageFallback, newsFallback, projectPartners } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl, withFallback } from "../services/api.js";
+import { useDocumentTitle } from "../hooks/useDocumentTitle.jsx";
 
 const focusIcons = [BookOpen, GraduationCap, Handshake];
 const statIcons = [Landmark, Globe2, UsersRound, LibraryBig];
@@ -41,6 +42,9 @@ export function Home() {
   const { language, t } = useLanguage();
   const stats = language === "sq" && home.statsSq?.length ? home.statsSq : home.stats;
   const focusAreas = language === "sq" && home.focusAreasSq?.length ? home.focusAreasSq : home.focusAreas;
+  const pageTitle = localized(home.heroTitle, home.heroTitleSq, language) || "Home";
+
+  useDocumentTitle(pageTitle);
 
   useEffect(() => {
     let active = true;

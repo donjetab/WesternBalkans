@@ -1,0 +1,16 @@
+[
+  {
+    "Id": 1,
+    "Email": "adrian.sallauka",
+    "PasswordHash": "100000.Zyao80s8r/3MlTUUj4jOUA==.vyYSI5CSrVOt25kYleKqgndg2Muetbae9cLoo2Spxog=",
+    "Role": "MainAdmin",
+    "CreatedAt": "2026-05-22 13:02:07.0692859"
+  },
+  {
+    "Id": 2,
+    "Email": "donjeta.bajgora",
+    "PasswordHash": "100000.gffmZI0J6vv/cT3AsacE5Q==.BCreTLYHJXm3TLnXl29J696pkecgjCNPTRIohDNsacE=",
+    "Role": "Admin",
+    "CreatedAt": "2026-06-03 10:49:59.7653269"
+  }
+]

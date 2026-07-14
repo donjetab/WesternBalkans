@@ -82,16 +82,22 @@ export function Layout() {
 
 function DesktopNavGroup({ item }) {
   const { navLabel } = useLanguage();
+  const [closedAfterClick, setClosedAfterClick] = useState(false);
+
+  function closeDropdown() {
+    setClosedAfterClick(true);
+    document.activeElement?.blur?.();
+  }
 
   return (
-    <div className="nav-group">
+    <div className={`nav-group ${closedAfterClick ? "is-closed" : ""}`} onMouseLeave={() => setClosedAfterClick(false)}>
       <button className="nav-group-trigger" type="button">
         {navLabel(item.label)}
         <ChevronDown size={15} />
       </button>
       <div className="nav-dropdown">
         {item.items.map((child) => (
-          <NavLink key={child.to} to={child.to}>
+          <NavLink key={child.to} to={child.to} onClick={closeDropdown}>
             {navLabel(child.label)}
           </NavLink>
         ))}

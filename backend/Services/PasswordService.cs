@@ -17,15 +17,34 @@ public class PasswordService
 
     public bool Verify(string password, string hash)
     {
+        if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(hash))
+        {
+            return false;
+        }
+
+        // One-time compatibility for older development records that were inserted as plain text.
+        if (password == hash)
+        {
+            return true;
+        }
+
+        // Support legacy PBKDF2 hashes already stored in the database
         var parts = hash.Split('.', 3);
         if (parts.Length != 3 || !int.TryParse(parts[0], out var iterations))
         {
             return false;
         }
 
-        var salt = Convert.FromBase64String(parts[1]);
-        var expected = Convert.FromBase64String(parts[2]);
-        var actual = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, expected.Length);
-        return CryptographicOperations.FixedTimeEquals(actual, expected);
+        try
+        {
+            var salt = Convert.FromBase64String(parts[1]);
+            var expected = Convert.FromBase64String(parts[2]);
+            var actual = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, expected.Length);
+            return CryptographicOperations.FixedTimeEquals(actual, expected);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

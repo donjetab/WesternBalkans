@@ -25,8 +25,7 @@ export const navItems = [
     items: [
       { label: "Project Documents", to: "/documents" },
       { label: "Downloadable Documents", to: "/downloads" },
-      { label: "Case Studies and Reports", to: "/case-studies" },
-      { label: "Multimedia", to: "/multimedia" }
+      { label: "Case Studies and Reports", to: "/case-studies" }
     ]
   },
   { label: "News", to: "/news" }
@@ -66,6 +65,34 @@ export const homepageFallback = {
     { name: "Fehmi Agani University", country: "Kosovo", logoUrl: "/assets/Partners/fehmi agani.jpg" }
   ]
 };
+
+Object.assign(homepageFallback, {
+  heroEyebrowSq: "EU Erasmus+ - Ngritje e Kapaciteteve në Arsimin e Lartë",
+  heroTitleSq: "Ballkani Perëndimor",
+  heroSubtitleSq: "Edu4Migration",
+  heroBodySq:
+    "Projekti forcon kompetencat e punonjësve socialë aktualë dhe të ardhshëm në Kosovë dhe Shqipëri, në mënyrë që ata t'u përgjigjen më mirë sfidave të veçanta me të cilat përballen popullatat migrante.",
+  statsSq: [
+    { value: "12+", label: "Universitete partnere" },
+    { value: "5", label: "Shtete të përfshira" },
+    { value: "200+", label: "Profesionistë të trajnuar" },
+    { value: "20+", label: "Kurse të zhvilluara" }
+  ],
+  focusAreasSq: [
+    {
+      title: "Reforma arsimore",
+      body: "Ura lidhëse mes programeve të punës sociale dhe studimeve mbi migrimin përmes përfshirjes së lëndëve përkatëse në kurrikulat e arsimit të lartë."
+    },
+    {
+      title: "Mikro-kredencialet digjitale",
+      body: "Zhvillimi i mundësive fleksibile të të mësuarit online për profesionistët praktikues që kanë nevojë për zhvillim të vazhdueshëm."
+    },
+    {
+      title: "Mbështetje gjithëpërfshirëse",
+      body: "Pajisja e punonjësve socialë me njohuri dhe mjete për të avokuar për migrantët dhe për të mbështetur komunitetet pritëse."
+    }
+  ]
+});
 
 export const newsFallback = [
   {
@@ -260,6 +287,83 @@ export const newsFallback = [
   }
 ];
 
+const newsAlbanianFallback = {
+  1: {
+    titleSq: "Perspektiva globale mbi migrimin dhe punën sociale në konferencën ndërkombëtare hibride dyditore të studentëve",
+    excerptSq:
+      "Konferenca u mbajt më 26-27 mars 2026 në LOGOS University College në Tiranë dhe në Kolegjin AAB në Prishtinë, me fokus te migrimi, rezilienca, mbështetja psikosociale dhe kornizat institucionale gjithëpërfshirëse.",
+    contentSq:
+      "Konferenca Ndërkombëtare Hibride e Studentëve për Punën Sociale dhe Migrimin - \"Sfidat, rezilienca dhe praktikat inovative në mbështetje të komuniteteve migrante\" u mbajt më 26-27 mars 2026, si pjesë e projektit Edu4Migration, në LOGOS University College në Tiranë dhe në Kolegjin AAB në Prishtinë.\n\n" +
+      "Konferenca bashkoi studentë, akademikë dhe profesionistë për të diskutuar çështje kyçe të migrimit dhe punës sociale. Gjatë dy ditëve, sesionet u përqendruan në sfidat strukturore dhe të politikave, nevojën për korniza institucionale më gjithëpërfshirëse dhe mbështetjen psikosociale për individët dhe komunitetet e prekura nga migrimi.\n\n" +
+      "Diskutimet theksuan reziliencën dhe qasjet me bazë komunitetin, forcimin e kapaciteteve lokale dhe promovimin e sistemeve të qëndrueshme të mbështetjes për popullatat migrante.\n\n" +
+      "Studentët dhe hulumtuesit prezantuan studime dhe praktika inovative, duke nxitur bashkëpunimin ndërkombëtar dhe dialogun ndërdisiplinor."
+  },
+  2: {
+    titleSq: "Konferenca ndërkombëtare hibride e studentëve për punën sociale dhe migrimin nis në LOGOS University College në Tiranë",
+    excerptSq:
+      "Dita e parë theksoi përgjigjet bashkëpunuese dhe ndërdisiplinore ndaj sfidave të migrimit, cenueshmërisë, traumës, reziliencës dhe qasjeve me bazë komunitetin.",
+    contentSq:
+      "Dita e parë e Konferencës Ndërkombëtare Hibride të Studentëve për Punën Sociale dhe Migrimin u mbajt me sukses më 26 mars 2026 në LOGOS University College në Tiranë, në kuadër të projektit Edu4Migration.\n\n" +
+      "Konferenca bashkoi studentë, akademikë dhe profesionistë për të diskutuar çështje të rëndësishme që lidhen me migrimin dhe punën sociale.\n\n" +
+      "Gjatë ditës, prezantimet dhe diskutimet u fokusuan në sfidat strukturore dhe të politikave në punën sociale me migrantët, duke theksuar nevojën për korniza më gjithëpërfshirëse dhe më efektive institucionale.\n\n" +
+      "Pjesëmarrësit trajtuan gjithashtu tema të cenueshmërisë, traumës dhe mbështetjes psikosociale, si dhe qasje që forcojnë kapacitetet lokale dhe sistemet e qëndrueshme të mbështetjes."
+  },
+  3: {
+    titleSq: "Dita e dytë e Konferencës Ndërkombëtare të Studentëve për Punën Sociale dhe Migrimin u mbajt në Kolegjin AAB",
+    excerptSq:
+      "Dita e dytë në Prishtinë u fokusua te fëmijët dhe familjet në kontekstet migratore, mbështetja psikologjike, mjediset arsimore, etika dhe bashkëpunimi ndërdisiplinor.",
+    contentSq:
+      "Konferenca Ndërkombëtare Hibride e Studentëve për Punën Sociale dhe Migrimin u mbajt më 26-27 mars 2026 si pjesë e projektit Edu4Migration, në LOGOS University College në Tiranë dhe në Kolegjin AAB në Prishtinë.\n\n" +
+      "Dita e dytë krijoi hapësirë për diskutime mbi fëmijët dhe familjet në kontekstet migratore, mbështetjen psikologjike, mjediset arsimore dhe etikën profesionale.\n\n" +
+      "Pjesëmarrësit ndanë ide, përvoja dhe praktika inovative për të forcuar mbështetjen ndaj komuniteteve migrante dhe për të nxitur bashkëpunimin ndërdisiplinor."
+  },
+  4: {
+    titleSq: "Konferencë e ardhshme ndërkombëtare e studentëve për punën sociale dhe migrimin",
+    excerptSq:
+      "Konferenca Ndërkombëtare Hibride e Studentëve për Punën Sociale dhe Migrimin u planifikua për 26-27 mars 2026, me ditën e parë në Tiranë dhe ditën e dytë në Prishtinë.",
+    contentSq:
+      "Ju ftojmë në Konferencën Ndërkombëtare Hibride të Studentëve për Punën Sociale dhe Migrimin, të organizuar nga projekti WB-Edu4Migration i financuar nga BE-ja.\n\n" +
+      "Ky aktivitet dyditor do të bashkojë studentë, akademikë, hulumtues dhe profesionistë për të diskutuar sfidat kyçe dhe qasjet inovative në mbështetje të komuniteteve migrante.\n\n" +
+      "Pjesëmarrësit do të trajtojnë sfidat strukturore dhe të politikave, traumën psikosociale dhe reziliencën, praktikat inovative në shërbimet sociale, arsimin dhe menaxhimin e migrimit."
+  },
+  5: {
+    titleSq: "Thirrje për abstrakte: Konferenca Ndërkombëtare e Studentëve për Punën Sociale dhe Migrimin",
+    excerptSq:
+      "Projekti ftoi studentët nga institucionet partnere të dorëzojnë abstrakte mbi sfidat, reziliencën dhe praktikat inovative në mbështetje të komuniteteve migrante.",
+    contentSq:
+      "Konferenca Ndërkombëtare Hibride e Studentëve për \"Punën Sociale dhe Migrimin: Sfidat, rezilienca dhe praktikat inovative në mbështetje të komuniteteve migrante\" fton studentët nga institucionet partnere të dorëzojnë abstrakte.\n\n" +
+      "Konferenca, e planifikuar për 26-27 mars 2026, do të mbahet në format hibrid, me ditën e parë në LOGOS University College në Tiranë dhe ditën e dytë në Kolegjin AAB në Prishtinë.\n\n" +
+      "Qëllimi është t'u ofrohet studentëve një platformë për prezantimin e hulumtimeve, shkëmbimin e ideve dhe diskutimin ndërdisiplinor mbi migrimin dhe punën sociale.",
+    documentTitleSq: "PDF i thirrjes për abstrakte"
+  },
+  6: {
+    titleSq: "Projekti Edu4Migration - Universiteti IULM udhëheq trajnimin rajonal për avancimin e kurseve mikro-kredenciale në Ballkanin Perëndimor",
+    excerptSq:
+      "Një aktivitet trajnues rajonal mbështeti trajnerët dhe stafin akademik në hartimin e kurseve fleksibile mikro-kredenciale në Ballkanin Perëndimor.",
+    contentSq:
+      "<a href=\"https://openday.iulm.it/\" target=\"_blank\" rel=\"noopener noreferrer\">Universiteti IULM</a> (Itali) udhëhoqi me sukses trajnimin E4.1 Training of Trainers për partnerët universitarë të Ballkanit Perëndimor, me fokus në zhvillimin e kurseve mikro-kredenciale në kuadër të projektit WB-Edu4Migration.\n\n" +
+      "Trajnimi u mbajt më 17-18 nëntor në <a href=\"https://aab-edu.net\" target=\"_blank\" rel=\"noopener noreferrer\">Kolegjin AAB</a> në Prishtinë dhe vazhdoi më 20-21 nëntor në Universitetin Barleti në Tiranë.\n\n" +
+      "Aktiviteti ofroi një platformë dinamike për bashkëpunim, shkëmbim njohurish dhe ngritje kapacitetesh, duke mbështetur krijimin e rrugëve fleksibile të të mësuarit për nevojat bashkëkohore arsimore dhe të tregut të punës."
+  },
+  7: {
+    titleSq: "WB-Edu4Migration organizon trajnim dyditor të trajnerëve në Kolegjin AAB",
+    excerptSq:
+      "Kolegji AAB në Prishtinë priti trajnimin dyditor të trajnerëve në kuadër të projektit WB-Edu4Migration, të financuar nga Komisioni Evropian përmes programit Erasmus+.",
+    contentSq:
+      "Kolegji AAB në Prishtinë priti trajnimin dyditor të trajnerëve në kuadër të projektit WB-Edu4Migration. Trajnimi u fokusua në zhvillimin e kurseve mikro-kredenciale për partnerët universitarë të Ballkanit Perëndimor.\n\n" +
+      "Pjesëmarrësit punuan në planifikimin, hartimin dhe vlerësimin e mikro-kredencialeve, duke forcuar ekspertizën akademike për programe fleksibile të zhvillimit profesional."
+  },
+  10: {
+    titleSq: "THIRRJE PËR EKSPERT TË JASHTËM - Zhvillimi i kurseve mikro-kredenciale",
+    excerptSq:
+      "Projekti WB-Edu4Migration, i bashkëfinancuar nga Bashkimi Evropian, shpall thirrje për ekspert të jashtëm në fushën e arsimit të lartë dhe mikro-kredencializimit.",
+    contentSq: "",
+    documentTitleSq: "PDF i termave të referencës për mikro-kredenciale"
+  }
+};
+
+newsFallback.forEach((item) => Object.assign(item, newsAlbanianFallback[item.id] || {}));
+
 export const projectPartners = [
   {
     name: "Kolegji AAB",
@@ -407,6 +511,17 @@ export const pagesFallback = {
       { title: "Academic staff preparation", body: "Training materials and Training of Trainers activities support educators in designing and piloting course content." }
     ]
   },
+  contact: {
+    eyebrow: "Contact",
+    title: "Contact Us",
+    intro: "Key contacts and communication channels for the project.",
+    sections: [
+      { title: "Ardian Sallauka", body: "Project Coordinator at AAB College\nardian.sallauka@aab-edu.net" },
+      { title: "Ereza Mehmeti", body: "Project Monitoring Officer\nereza.mehmeti@aab-edu.net" },
+      { title: "General project office", body: "Office for Project Development\nprojects@aab-edu.net" },
+      { title: "WB Edu4Migration", body: "Project email\nwbedu4migrationproject@gmail.com" }
+    ]
+  },
   "work-packages": 
   {
     eyebrow: "Activities",
@@ -533,3 +648,240 @@ export const pagesFallback = {
     ]
   }
 };
+
+const pageAlbanianFallback = {
+  overview: {
+    eyebrowSq: "Rreth projektit",
+    titleSq: "Përmbledhje e Projektit",
+    introSq: "Projekti WB-Edu4Migration financohet nga BE-ja në kuadër të Erasmus+ Capacity Building in Higher Education, Strand 1.",
+    sections: [
+      {
+        titleSq: "Hendeku i aftësive në mbështetjen e migrimit",
+        bodySq: "Projekti adreson një hendek kritik aftësish te punonjësit socialë në Kosovë dhe Shqipëri në lidhje me popullatat migrante. Ky hendek kufizon aftësinë e punonjësve socialë për t'i ndihmuar migrantët në mënyrë efektive."
+      },
+      {
+        titleSq: "Përgjigje përmes kurrikulës dhe trajnimit",
+        bodySq: "Institucionet arsimore nuk i kanë integruar ende plotësisht temat e migrimit në programet e punës sociale. Projekti përgjigjet duke reformuar kurrikulat, duke zhvilluar kurse digjitale mikro-kredenciale dhe duke zbatuar aktivitete për ngritje kapacitetesh."
+      },
+      {
+        titleSq: "Mjedis gjithëpërfshirës për migrantët",
+        bodySq: "Këto përpjekje synojnë të krijojnë një mjedis më gjithëpërfshirës dhe mbështetës për migrantët dhe t'i ndihmojnë punonjësit socialë të avokojnë më mirë për nevojat e tyre."
+      }
+    ]
+  },
+  partners: {
+    eyebrowSq: "Konsorciumi",
+    titleSq: "Partnerët e Projektit",
+    introSq: "Institucione akademike dhe organizata nga Kosova, Shqipëria, Danimarka, Austria dhe Italia."
+  },
+  management: {
+    eyebrowSq: "Struktura",
+    titleSq: "Struktura e Menaxhimit të Projektit",
+    introSq: "Projekti koordinohet nga Kolegji AAB, ndërsa institucionet partnere kontribuojnë në paketat specifike të punës.",
+    sections: [
+      {
+        titleSq: "Koordinimi",
+        bodySq: "Kolegji AAB koordinon projektin dhe mbështet harmonizimin ndërmjet institucioneve partnere, paketave të punës, afateve dhe raportimit në nivel projekti."
+      },
+      {
+        titleSq: "Përgjegjësitë e partnerëve",
+        bodySq: "Çdo institucion partner kontribuon në paketa pune dhe aktivitete specifike, duke siguruar që zhvillimi i kurrikulës, dizajnimi i mikro-kredencialeve, sigurimi i cilësisë dhe diseminimi të ndahen në të gjithë konsorciumin."
+      },
+      {
+        titleSq: "Ekipi menaxhues",
+        bodySq: "Ekipi i menaxhimit të projektit mbikëqyr operacionet, monitoron progresin dhe mbështet komunikimin efektiv ndërmjet partnerëve."
+      }
+    ]
+  },
+  objectives: {
+    eyebrowSq: "Objektivat",
+    titleSq: "Objektivat dhe Grupet e Synuara",
+    introSq: "Projekti synon të përmirësojë kompetencat e punonjësve socialë dhe studentëve në Kosovë dhe Shqipëri, në mënyrë që ata të ofrojnë mbështetje më të mirë për popullatat migrante.",
+    sections: [
+      {
+        titleSq: "Grupet e synuara",
+        bodySq: "Grupet kryesore të synuara janë studentët e punës sociale, punonjësit socialë aktualë dhe edukatorët e përfshirë në programet e shkencave sociale dhe psikologjisë në institucionet partnere."
+      },
+      {
+        titleSq: "O1 - Udhëzime për kurrikulën",
+        bodySq: "Krijimi i udhëzimeve për integrimin e temave që lidhen me migrimin në kurrikulat ekzistuese."
+      },
+      {
+        titleSq: "O2 - Kurrikula të rishikuara",
+        bodySq: "Rishikimi dhe pasurimi i kurrikulave në fakultetet e shkencave sociale dhe psikologjisë në institucionet partnere, duke përfshirë tema të migrimit."
+      },
+      {
+        titleSq: "O3 - Kurse mikro-kredenciale",
+        bodySq: "Zhvillimi dhe pilotimi i kurseve të shkurtra digjitale mikro-kredenciale për punonjësit socialë praktikues, të fokusuara në njohuri dhe aftësi të specializuara për nevojat e migrantëve."
+      },
+      {
+        titleSq: "O4 - Ngritje kapacitetesh",
+        bodySq: "Ofrimi i iniciativave për ngritje kapacitetesh për edukatorët dhe trajnerët e përfshirë në përmirësimin e kurrikulës dhe hartimin e kurseve mikro-kredenciale."
+      }
+    ]
+  },
+  outcomes: {
+    eyebrowSq: "Ndikimi",
+    titleSq: "Rezultatet e Pritura",
+    introSq: "Rezultatet e pritshme fokusohen në kurrikula më të forta, të mësuar fleksibil profesional dhe praktikë më të mirë të mbështetjes për migrimin.",
+    sections: [
+      { titleSq: "Kurrikula të rishikuara", bodySq: "Kurrikula që përfshijnë tema të migrimit në programet përkatëse të arsimit të lartë." },
+      { titleSq: "Kurse mikro-kredenciale", bodySq: "Zhvillimi dhe zbatimi i kurseve të shkurtra digjitale për profesionistët praktikues." },
+      { titleSq: "Kompetencë kulturore", bodySq: "Rritje e kompetencës kulturore te punonjësit socialë që punojnë me popullata migrante." },
+      { titleSq: "Kapacitete të edukatorëve", bodySq: "Më shumë mundësi për ngritje kapacitetesh për edukatorët dhe trajnerët." },
+      { titleSq: "Ndikim shoqëror", bodySq: "Ndikime pozitive shoqërore përmes integrimit dhe mbështetjes më të mirë për migrantët." }
+    ]
+  },
+  documents: {
+    eyebrowSq: "Burimet",
+    titleSq: "Lista e Dokumenteve të Projektit",
+    introSq: "Zona e dokumenteve është e përgatitur për raporte, plane, udhëzime dhe rezultate publike të projektit.",
+    sections: [
+      { titleSq: "Dokumente të menaxhimit të projektit", bodySq: "Struktura menaxhimi, plan menaxhimi, marrëveshje partneriteti e nënshkruar dhe raport i takimit fillestar." },
+      { titleSq: "Dokumente të cilësisë dhe diseminimit", bodySq: "Terma reference për sigurimin e cilësisë, plan cilësie, plan diseminimi, plan shfrytëzimi, plan qëndrueshmërie dhe raporte cilësie të projektit." },
+      { titleSq: "Dokumente të të mësuarit dhe kurrikulës", bodySq: "Raporte të vlerësimit të nevojave, udhëzime për mikro-kredenciale, programe trajnimi, libër i studimeve të rastit dhe raporte të rishikimit të kurrikulës." }
+    ]
+  },
+  courses: {
+    eyebrowSq: "Të mësuarit",
+    titleSq: "Kurse",
+    introSq: "Faqja e kurseve është e rezervuar për ofertën digjitale të mikro-kredencialeve të projektit.",
+    sections: [
+      { titleSq: "Fokus te mikro-kredencialet", bodySq: "Kurse që mbështesin punonjësit socialë praktikues me njohuri dhe aftësi të specializuara për nevojat dhe sfidat e migrantëve." },
+      { titleSq: "Të mësuar fleksibil online", bodySq: "Projekti thekson kurset e shkurtra digjitale që mbështesin zhvillimin e vazhdueshëm profesional." },
+      { titleSq: "Përgatitja e stafit akademik", bodySq: "Materialet trajnuese dhe aktivitetet Training of Trainers mbështesin edukatorët në hartimin dhe pilotimin e përmbajtjes së kurseve." }
+    ]
+  },
+  "work-packages": {
+    eyebrowSq: "Aktivitetet",
+    titleSq: "Paketat e Punës",
+    introSq: "Aktivitetet e projektit organizohen në paketa pune që mbulojnë menaxhimin, analizën e nevojave, zhvillimin e kurrikulës, mikro-kredencialet, cilësinë dhe diseminimin.",
+    sections: [
+      { titleSq: "WP1 - Menaxhimi i projektit", bodySq: "Krijimi i strukturave menaxhuese, marrëveshjeve të partneritetit, rutinave të koordinimit, takimeve dhe raportimit të projektit." },
+      { titleSq: "WP2 - Analiza e nevojave dhe udhëzimet", bodySq: "Identifikimi i sfidave dhe mundësive që lidhen me migrimin, angazhimi i praktikuesve dhe përgatitja e udhëzimeve për mikro-kredenciale." },
+      { titleSq: "WP3 - Përmirësimi i kurrikulës", bodySq: "Zhvillimi i studimeve të rastit mbi temat e migrimit dhe rishikimi i kurrikulave e kurseve bazuar në gjetjet e projektit." },
+      { titleSq: "WP4 - Zhvillimi i kurseve mikro-kredenciale", bodySq: "Përgatitja e programeve dhe materialeve trajnuese, dizajnimi i kurseve mikro-kredenciale dhe pilotimi i zbatimit të tyre." },
+      { titleSq: "WP5 - Sigurimi i cilësisë", bodySq: "Krijimi i strukturave të sigurimit të cilësisë, monitorimi i zbatimit dhe përgatitja e raporteve të cilësisë." },
+      { titleSq: "WP6 - Diseminimi dhe qëndrueshmëria", bodySq: "Planifikimi i aktiviteteve të diseminimit, shfrytëzimit dhe qëndrueshmërisë, si dhe organizimi i konferencave përfundimtare." }
+    ]
+  },
+  deliverables: {
+    eyebrowSq: "Rezultatet",
+    titleSq: "Produktet",
+    introSq: "Produktet nga lista e projektit janë organizuar si katalog publik i rezultateve.",
+    sections: [
+      { titleSq: "D1.4 - Marrëveshja e Partneritetit e Nënshkruar", bodySq: "Afati 30.11.2024." },
+      { titleSq: "D1.1 - Strukturat e Menaxhimit dhe Plani i Menaxhimit të Projektit", bodySq: "Afati 31.12.2024." },
+      { titleSq: "D5.1 - Termat e Referencës dhe Plani i Sigurimit të Cilësisë", bodySq: "Afati 31.12.2024." },
+      { titleSq: "D6.1 - Plani i Diseminimit, Shfrytëzimit dhe Qëndrueshmërisë", bodySq: "Afati 31.12.2024." },
+      { titleSq: "D1.2 - Raporti i takimit fillestar", bodySq: "Afati 31.01.2025." },
+      { titleSq: "D2.3 - Udhëzime për zhvillimin dhe zbatimin e mikro-kredencialeve në Kosovë dhe Shqipëri", bodySq: "Afati 30.06.2025." },
+      { titleSq: "D4.1 - Programi dhe materialet trajnuese për stafin akademik", bodySq: "Afati 30.06.2025." },
+      { titleSq: "D1.3 - Programi dhe materialet ToT për mikro-kredencialet", bodySq: "Afati 31.10.2025." },
+      { titleSq: "D5.3 - Raporti afatmesëm i projektit", bodySq: "Afati 30.04.2026." },
+      { titleSq: "D3.2 - Raporti afatmesëm i cilësisë së projektit", bodySq: "Afati 30.04.2026." },
+      { titleSq: "D2.2 - Libri i studimeve të rastit mbi migrimin", bodySq: "Afati 31.10.2026." },
+      { titleSq: "D4.2 - Raporti mbi zhvillimin dhe pilotimin e kurseve mikro-kredenciale", bodySq: "Afati 30.06.2027." },
+      { titleSq: "D3.3 - Raporti mbi rishikimet e kurrikulës dhe kurseve", bodySq: "Afati 31.08.2027." },
+      { titleSq: "D5.2 - Raporti përfundimtar i cilësisë", bodySq: "Afati 31.10.2027." },
+      { titleSq: "D5.4 - Raporti i vlerësimit të jashtëm", bodySq: "Afati 31.10.2027." },
+      { titleSq: "D6.2 - Raporti i konferencës përfundimtare të diseminimit", bodySq: "Afati 31.10.2027." }
+    ]
+  },
+  milestones: {
+    eyebrowSq: "Afatet",
+    titleSq: "Pikat Kryesore",
+    introSq: "Tetë pika kryesore strukturojnë zbatimin nga ngritja e menaxhimit deri te rishikimi i kurrikulës.",
+    sections: [
+      { titleSq: "M1 - Strukturat dhe plani i menaxhimit të projektit", bodySq: "Strukturat menaxhuese dhe dokumentet e planifikimit janë vendosur." },
+      { titleSq: "M2 - Raporti i takimit fillestar", bodySq: "Takimi fillestar është dokumentuar dhe raportuar." },
+      { titleSq: "M3 - Raportet e vlerësimit të nevojave", bodySq: "Raporte mbi sfidat dhe mundësitë e migrimit në Kosovë dhe Shqipëri." },
+      { titleSq: "M4 - Udhëzime për mikro-kredenciale", bodySq: "Udhëzime për zhvillimin dhe zbatimin e mikro-kredencialeve në Kosovë dhe Shqipëri." },
+      { titleSq: "M5 - Libri i studimeve të rastit", bodySq: "Libër i studimeve të rastit mbi temat e migrimit." },
+      { titleSq: "M6 - Raporti i angazhimit të praktikuesve", bodySq: "Raport mbi tryezat e rrumbullakëta dhe ditët e praktikuesve." },
+      { titleSq: "M7 - Raporti i zbatimit të mikro-kredencialeve", bodySq: "Raport mbi zhvillimin dhe pilotimin e kurseve mikro-kredenciale." },
+      { titleSq: "M8 - Raporti i rishikimit të kurrikulës", bodySq: "Raport mbi rishikimet e kurrikulës dhe kurseve." }
+    ]
+  },
+  events: {
+    eyebrowSq: "Aktivitetet",
+    titleSq: "Ngjarjet",
+    introSq: "Punëtori, ditë të praktikuesve, tryeza të rrumbullakëta, trajnime dhe konferenca diseminimi.",
+    sections: [
+      { titleSq: "E1.1 - Takimi fillestar", bodySq: "Punëtori në Prishtinë, Kosovë. 3 ditë, 30 pjesëmarrës. Krijimi i strukturave të projektit dhe diskutimi i paketave të punës." },
+      { titleSq: "E2.1 - Dita e Praktikuesve në Austri", bodySq: "Ngjarje në Salzburg, Austri. 2 ditë, 15 pjesëmarrës. Diskutim mbi praktikat ndërkombëtare dhe nevojat arsimore lidhur me shërbimet e migrimit." },
+      { titleSq: "E2.2 - Dita e Praktikuesve në Kosovë", bodySq: "Ngjarje në Prishtinë, Kosovë. 1 ditë, 50 pjesëmarrës. Identifikimi i sfidave të përbashkëta dhe nevojave për trajnim." },
+      { titleSq: "E2.3 - Dita e Praktikuesve në Shqipëri", bodySq: "Ngjarje në Tiranë, Shqipëri. 1 ditë, 50 pjesëmarrës. Diskutim mbi sfidat profesionale dhe mundësitë e trajnimit." },
+      { titleSq: "E2.4 - Tryezë e rrumbullakët në Kosovë", bodySq: "Ngjarje në Prishtinë, Kosovë. 1 ditë, 35 pjesëmarrës. Diskutim mbi situatën e migrimit, hendekun e aftësive dhe udhëzimet për mikro-kredenciale." },
+      { titleSq: "E2.5 - Tryezë e rrumbullakët në Shqipëri", bodySq: "Ngjarje në Tiranë, Shqipëri. 1 ditë, 35 pjesëmarrës. Vlerësimi i situatës së migrimit dhe diskutimi mbi zbatimin e mikro-kredencialeve." },
+      { titleSq: "E3.1 - Trajnim i trajnerëve në Danimarkë", bodySq: "Trajnim në Odense, Danimarkë. 3 ditë, 12 pjesëmarrës. Fokus në zhvillimin e studimeve të rastit dhe metodologjitë PBL/PrBL." },
+      { titleSq: "E3.2 - Trajnim i trajnerëve në Kosovë", bodySq: "Trajnim në Prishtinë, Mitrovicë dhe Gjakovë. 3 ditë, 30 pjesëmarrës. Trajnim i stafit akademik për zhvillimin e studimeve të rastit." },
+      { titleSq: "E3.3 - Trajnim i trajnerëve në Shqipëri", bodySq: "Trajnim në Tiranë, Shqipëri. 3 ditë, 30 pjesëmarrës. Mbështetje për stafin akademik në aplikimin e metodave të studimeve të rastit dhe PBL." },
+      { titleSq: "E4.1 - ToT në Kosovë (Kurse mikro-kredenciale)", bodySq: "Trajnim në Prishtinë, Kosovë. 2 ditë, 30 pjesëmarrës. Trajnim i stafit akademik për hartimin dhe zbatimin e kurseve mikro-kredenciale." },
+      { titleSq: "E4.2 - ToT në Shqipëri (Kurse mikro-kredenciale)", bodySq: "Trajnim në Tiranë, Shqipëri. 2 ditë, 30 pjesëmarrës. Përgatitja e universiteteve shqiptare për krijimin e moduleve të synuara mikro-kredenciale." },
+      { titleSq: "E6.1 - Konferenca përfundimtare e diseminimit në Kosovë", bodySq: "Konferencë në Prishtinë, Kosovë. 1 ditë, 50 pjesëmarrës. Prezantimi i rezultateve, mësimeve të nxjerra dhe qëndrueshmërisë së ardhshme." },
+      { titleSq: "E6.2 - Konferenca përfundimtare e diseminimit në Shqipëri", bodySq: "Konferencë në Tiranë, Shqipëri. 1 ditë, 50 pjesëmarrës. Prezantimi i rezultateve dhe diskutimi i zbatimit të ardhshëm në rajon." }
+    ]
+  },
+  updates: {
+    eyebrowSq: "Përditësime",
+    titleSq: "Përditësimet e Projektit",
+    introSq: "Faqja e përditësimeve të projektit është e rezervuar për zhvillimet e vazhdueshme të zbatimit.",
+    sections: [
+      { titleSq: "Trajnime dhe aktivitete të projektit", bodySq: "Përditësimet e projektit shfaqen edhe në faqen e lajmeve, duke përfshirë trajnimet, konferencat, thirrjet dhe ngjarjet studentore." },
+      { titleSq: "Përditësime të menaxhuara nga administratori", bodySq: "Përdorni panelin e administratorit për të publikuar përditësime të reja pa ndryshuar kodin." }
+    ]
+  },
+  downloads: {
+    eyebrowSq: "Burimet",
+    titleSq: "Dokumente për Shkarkim",
+    introSq: "Seksioni i dokumenteve për shkarkim është i gatshëm për dosje publike dhe rezultate të projektit.",
+    sections: [
+      {
+        titleSq: "Thirrje për abstrakte: Konferenca Ndërkombëtare e Studentëve për Punën Sociale dhe Migrimin",
+        bodySq: "Shkarkoni thirrjen për abstrakte për Konferencën Ndërkombëtare të Studentëve për Punën Sociale dhe Migrimin.",
+        documentTitleSq: "PDF i thirrjes për abstrakte"
+      },
+      {
+        titleSq: "Termat e Referencës: Ekspert për mikro-kredenciale",
+        bodySq: "Shkarkoni termat e referencës për rolin e ekspertit të mikro-kredencialeve në kuadër të projektit WB-Edu4Migration.",
+        documentTitleSq: "PDF i ToR për ekspertin e mikro-kredencialeve"
+      }
+    ]
+  },
+  "case-studies": {
+    eyebrowSq: "Burimet",
+    titleSq: "Studime Rasti dhe Raporte",
+    introSq: "Ky seksion është përgatitur për studime rasti të fokusuara te migrimi dhe raporte të projektit.",
+    sections: [
+      { titleSq: "Libri i studimeve të rastit", bodySq: "Projekti përfshin një libër të studimeve të rastit mbi temat e migrimit si rezultat i planifikuar." },
+      { titleSq: "Raporte", bodySq: "Raportet e vlerësimit të nevojave, raportet e ditëve të praktikuesve, tryezave të rrumbullakëta dhe rishikimit të kurrikulës mund të mblidhen këtu." }
+    ]
+  },
+  multimedia: {
+    eyebrowSq: "Burimet",
+    titleSq: "Multimedia",
+    introSq: "Faqja multimedia është e rezervuar për foto, video dhe materiale vizuale të projektit.",
+    sections: [
+      { titleSq: "Media e projektit", bodySq: "Përdoreni këtë hapësirë për galeri ngjarjesh, foto trajnimesh, media konferencash dhe materiale komunikimi të partnerëve." },
+      { titleSq: "Referenca mediatike", bodySq: "Imazhet e ngarkuara përmes panelit të administratorit mund të përdoren në lajme dhe në përmbajtjen e ballinës." }
+    ]
+  }
+};
+
+Object.entries(pageAlbanianFallback).forEach(([slug, translation]) => {
+  const page = pagesFallback[slug];
+  if (!page) return;
+
+  Object.assign(page, {
+    eyebrowSq: translation.eyebrowSq,
+    titleSq: translation.titleSq,
+    introSq: translation.introSq
+  });
+
+  translation.sections?.forEach((sectionTranslation, index) => {
+    if (page.sections?.[index]) {
+      Object.assign(page.sections[index], sectionTranslation);
+    }
+  });
+});

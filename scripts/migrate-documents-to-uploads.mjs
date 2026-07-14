@@ -10,7 +10,9 @@ const targetDocumentsDir = path.join(root, "backend", "Uploads", "Documents");
 
 const API_BASE = process.env.VITE_API_URL || "http://localhost:5088/api";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@edu4migration.local";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ChangeMe123!";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+if (!ADMIN_PASSWORD) throw new Error('ADMIN_PASSWORD environment variable is required for this script');
 
 async function request(pathname, options = {}) {
   const response = await fetch(`${API_BASE}${pathname}`, {

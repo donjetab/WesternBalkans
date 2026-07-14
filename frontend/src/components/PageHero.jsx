@@ -1,6 +1,9 @@
 import React from "react";
+import { useDocumentTitle } from "../hooks/useDocumentTitle.jsx";
 
 export function PageHero({ eyebrow, title, intro, className = "", topContent = null, metaContent = null }) {
+  useDocumentTitle(title);
+
   return (
     <section className={`page-hero ${className}`.trim()}>
       <div className="container">

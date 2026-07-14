@@ -3,25 +3,9 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
-import { homepageFallback, projectPartners } from "../data/fallbackContent.js";
+import { homepageFallback } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl, withFallback } from "../services/api.js";
-
-function mergePartnerFallbacks(partners = []) {
-  const source = partners.length ? partners : projectPartners;
-
-  return source.map((partner) => {
-    const fallback = projectPartners.find((item) => item.name === partner.name)
-      || projectPartners.find((item) => item.logoUrl === partner.logoUrl)
-      || {};
-
-    return {
-      ...fallback,
-      ...partner,
-      role: partner.role || fallback.role || "Partner",
-      websiteUrl: partner.websiteUrl || fallback.websiteUrl || ""
-    };
-  });
-}
+import { useDocumentTitle } from "../hooks/useDocumentTitle.jsx";
 
 function normalizePartnerWebsiteUrl(url = "") {
   const trimmed = url.trim();
@@ -31,14 +15,17 @@ function normalizePartnerWebsiteUrl(url = "") {
 }
 
 export function Partners() {
-  const [partners, setPartners] = useState(mergePartnerFallbacks(projectPartners));
+  const [partners, setPartners] = useState(homepageFallback.partners || []);
   const { t } = useLanguage();
+
+  useDocumentTitle(t("projectPartners") || "Project Partners");
 
   useEffect(() => {
     let active = true;
 
     withFallback(api.getHomepage, homepageFallback).then((data) => {
-      if (active) setPartners(mergePartnerFallbacks(data.partners));
+      if (!active) return;
+      setPartners(Array.isArray(data.partners) ? data.partners : homepageFallback.partners || []);
     });
 
     return () => {

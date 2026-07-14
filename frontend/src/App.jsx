@@ -13,7 +13,11 @@ import { AdminDashboard } from "./pages/AdminDashboard.jsx";
 import { getToken } from "./services/api.js";
 
 function ProtectedRoute({ children }) {
-  return getToken() ? children : <Navigate to="/admin/login" replace />;
+  if (!getToken()) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return children;
 }
 
 function ScrollToTop() {
@@ -61,7 +65,7 @@ export default function App() {
           <Route path="/updates" element={<ContentPage slug="updates" />} />
           <Route path="/downloads" element={<ContentPage slug="downloads" />} />
           <Route path="/case-studies" element={<ContentPage slug="case-studies" />} />
-          <Route path="/multimedia" element={<ContentPage slug="multimedia" />} />
+          <Route path="/multimedia" element={<Navigate to="/documents" replace />} />
           <Route path="/contact" element={<Contact />} />
         </Route>
       </Routes>

@@ -13,12 +13,32 @@ public class AuthController(AppDbContext db, PasswordService passwords, JwtToken
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
-        var user = await db.AdminUsers.SingleOrDefaultAsync(admin => admin.Email == request.Email);
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        {
+            return Unauthorized("Invalid email or password.");
+        }
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var user = await db.AdminUsers.SingleOrDefaultAsync(admin => admin.Email == email);
         if (user is null || !passwords.Verify(request.Password, user.PasswordHash))
         {
             return Unauthorized("Invalid email or password.");
         }
 
-        return Ok(new LoginResponse(tokens.CreateToken(user), user.Email, user.Role));
+        if (user.PasswordHash == request.Password)
+        {
+            user.PasswordHash = passwords.Hash(request.Password);
+            await db.SaveChangesAsync();
+        }
+
+        return Ok(new LoginResponse(tokens.CreateToken(user), user.Id, user.Email, user.Role, InitialsFromEmail(user.Email)));
+    }
+
+    private static string InitialsFromEmail(string email)
+    {
+        var namePart = email.Split('@')[0];
+        var pieces = namePart.Split(['.', '_', '-', ' '], StringSplitOptions.RemoveEmptyEntries);
+        var initials = string.Concat(pieces.Take(2).Select(piece => char.ToUpperInvariant(piece[0])));
+        return string.IsNullOrWhiteSpace(initials) ? "A" : initials;
     }
 }

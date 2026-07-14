@@ -3,6 +3,7 @@ import { ArrowRight, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { resolveMediaUrl } from "../services/api.js";
+import { getNewsPath } from "../utils/newsUrls.js";
 
 function shortenText(text = "", sentenceLimit = 4) {
   const normalized = text.trim();
@@ -24,7 +25,7 @@ export function NewsCard({ item }) {
   const image = item.thumbnailUrl || item.imageUrl;
 
   return (
-    <Link className="news-card news-card-link" to={`/news/${item.id}`} aria-label={`${t("readStory")}: ${title}`}>
+    <Link className="news-card news-card-link" to={getNewsPath(item)} aria-label={`${t("readStory")}: ${title}`}>
       <div className="news-image">
         {image ? <img src={resolveMediaUrl(image)} alt="" /> : <span>Edu4Migration</span>}
       </div>

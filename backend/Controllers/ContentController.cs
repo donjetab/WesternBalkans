@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using System.Text.Json;
 using Edu4Migration.Api.Data;
 using Edu4Migration.Api.DTOs;
 using Edu4Migration.Api.Models;
+using Edu4Migration.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +12,7 @@ namespace Edu4Migration.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ContentController(AppDbContext db) : ControllerBase
+public class ContentController(AppDbContext db, AuditService audit) : ControllerBase
 {
     [HttpGet("homepage")]
     public async Task<ActionResult<HomepageDto>> GetHomepage()
@@ -19,8 +21,8 @@ public class ContentController(AppDbContext db) : ControllerBase
         return content is null ? NotFound() : Ok(ToDto(content));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("homepage")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<ActionResult<HomepageDto>> UpdateHomepage(HomepageDto request)
     {
         var content = await db.HomepageContents.OrderBy(item => item.Id).FirstOrDefaultAsync();
@@ -47,6 +49,7 @@ public class ContentController(AppDbContext db) : ControllerBase
         content.UpdatedAt = DateTime.UtcNow;
 
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "Homepage", "Updated", "Homepage");
         return Ok(ToDto(content));
     }
 
@@ -60,8 +63,8 @@ public class ContentController(AppDbContext db) : ControllerBase
         return page is null ? NotFound() : Ok(ToDto(page));
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("pages/{slug}")]
+    [Authorize(Roles = "Admin,MainAdmin")]
     public async Task<ActionResult<ContentPageDto>> UpdatePage(string slug, ContentPageDto request)
     {
         var page = await db.ContentPages.Include(item => item.Sections).SingleOrDefaultAsync(item => item.Slug == slug);
@@ -92,7 +95,19 @@ public class ContentController(AppDbContext db) : ControllerBase
         }).ToList();
 
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "ContentPage", "Updated", page.Title);
         return Ok(ToDto(page));
+    }
+
+    private int GetCurrentUserId()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(id, out var parsed) ? parsed : 0;
+    }
+
+    private string GetCurrentEmail()
+    {
+        return User.FindFirstValue(ClaimTypes.Email) ?? "system";
     }
 
     private static HomepageDto ToDto(HomepageContent content)

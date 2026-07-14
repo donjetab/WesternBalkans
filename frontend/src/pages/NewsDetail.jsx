@@ -1,31 +1,61 @@
 import React from "react";
 import { ArrowLeft, CalendarDays, Download, FileText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { PageHero } from "../components/PageHero.jsx";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { localized, useLanguage } from "../context/LanguageContext.jsx";
 import { newsFallback } from "../data/fallbackContent.js";
 import { api, resolveMediaUrl } from "../services/api.js";
+import { getNewsPath, isNumericNewsParam, slugifyNewsTitle } from "../utils/newsUrls.js";
 
 export function NewsDetail() {
-  const { id } = useParams();
+  const { id = "" } = useParams();
+  const navigate = useNavigate();
   const { language, t } = useLanguage();
-  const fallbackItem = useMemo(() => newsFallback.find((item) => String(item.id) === String(id)) || newsFallback[0], [id]);
+  const fallbackItem = useMemo(() => {
+    if (isNumericNewsParam(id)) {
+      return newsFallback.find((item) => String(item.id) === String(id)) || newsFallback[0];
+    }
+
+    return newsFallback.find((item) => slugifyNewsTitle(item.title || item.titleSq) === id) || newsFallback[0];
+  }, [id]);
   const [item, setItem] = useState(fallbackItem);
+  const [selectedPicture, setSelectedPicture] = useState(null);
 
   useEffect(() => {
     setItem(fallbackItem);
     let active = true;
 
-    api.getNewsItemFast(id, newsFallback).then((data) => {
-      if (active && data) setItem(data);
-    });
+    if (isNumericNewsParam(id)) {
+      api.getNewsItemFast(id, newsFallback).then((data) => {
+        if (!active || !data) return;
+        setItem(data);
+        navigate(getNewsPath(data), { replace: true });
+      });
+    } else {
+      api.getNewsFast(false, newsFallback).then((items) => {
+        if (!active) return;
+        const match = items.find((newsItem) => slugifyNewsTitle(newsItem.title || newsItem.titleSq) === id);
+        if (match) setItem(match);
+      });
+    }
 
     return () => {
       active = false;
     };
-  }, [fallbackItem, id]);
+  }, [fallbackItem, id, navigate]);
+
+  useEffect(() => {
+    if (!selectedPicture) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setSelectedPicture(null);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [selectedPicture]);
 
   const locale = language === "sq" ? "sq-AL" : undefined;
   const title = localized(item.title, item.titleSq, language);
@@ -66,11 +96,7 @@ export function NewsDetail() {
             </div>
           ) : null}
 
-          <div className="news-detail-content">
-            {(content || excerpt || "").split("\n").filter(Boolean).map((paragraph) => (
-              <p key={paragraph}>{renderLinkedText(paragraph)}</p>
-            ))}
-          </div>
+          <div className="news-detail-content" dangerouslySetInnerHTML={{ __html: sanitizeNewsHtml(content || excerpt || "") }} />
 
           {item.documentUrl ? (
             <section className="news-document">
@@ -93,40 +119,77 @@ export function NewsDetail() {
 
           {gallery.length > 1 ? (
             <div className="news-gallery">
-              {gallery.map((image) => (
-                <img src={resolveMediaUrl(image)} alt="" key={image} />
+              {gallery.map((image, index) => (
+                <button className="news-gallery-button" type="button" key={image} onClick={() => setSelectedPicture(image)}>
+                  <img src={resolveMediaUrl(image)} alt={`${title} picture ${index + 1}`} />
+                </button>
               ))}
             </div>
           ) : null}
         </article>
       </SectionReveal>
+
+      {selectedPicture ? (
+        <div className="news-picture-lightbox" role="dialog" aria-modal="true" aria-label="News picture preview" onClick={() => setSelectedPicture(null)}>
+          <button className="news-picture-lightbox-close" type="button" aria-label="Close picture preview" onClick={() => setSelectedPicture(null)}>
+            x
+          </button>
+          <img src={resolveMediaUrl(selectedPicture)} alt={title} onClick={(event) => event.stopPropagation()} />
+        </div>
+      ) : null}
     </>
   );
 }
 
-function renderLinkedText(text) {
-  const anchorPattern = /<a\s+href="([^"]+)"(?:\s+target="([^"]+)")?(?:\s+rel="([^"]+)")?>(.*?)<\/a>/g;
-  const parts = [];
-  let lastIndex = 0;
-  let match;
+function sanitizeNewsHtml(text = "") {
+  if (typeof window === "undefined") return text;
 
-  while ((match = anchorPattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
+  const template = document.createElement("template");
+  const hasHtml = /<\/?[a-z][\s\S]*>/i.test(text);
+  template.innerHTML = hasHtml
+    ? text.replace(/\n/g, "<br>")
+    : text.split("\n").filter(Boolean).map((line) => `<p>${line}</p>`).join("");
+  const allowedTags = new Set(["A", "STRONG", "B", "EM", "I", "BR", "DIV", "P"]);
+
+  template.content.querySelectorAll("*").forEach((element) => {
+    if (!allowedTags.has(element.tagName)) {
+      const style = element.getAttribute("style") || "";
+      const isBold = /font-weight\s*:\s*(bold|[6-9]00)/i.test(style);
+      const isItalic = /font-style\s*:\s*italic/i.test(style);
+
+      if (isBold || isItalic) {
+        const wrapper = document.createElement(isBold ? "strong" : "em");
+        wrapper.append(...element.childNodes);
+
+        if (isBold && isItalic) {
+          const inner = document.createElement("em");
+          inner.append(...wrapper.childNodes);
+          wrapper.append(inner);
+        }
+
+        element.replaceWith(wrapper);
+      } else {
+        element.replaceWith(...element.childNodes);
+      }
+      return;
     }
 
-    const [, href, target = "_blank", rel = "noopener noreferrer", label] = match;
-    parts.push(
-      <a href={href} target={target} rel={rel} key={`${href}-${match.index}`}>
-        {label}
-      </a>
-    );
-    lastIndex = anchorPattern.lastIndex;
-  }
+    const href = element.tagName === "A" ? element.getAttribute("href") || "" : "";
 
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
+    [...element.attributes].forEach((attribute) => {
+      element.removeAttribute(attribute.name);
+    });
 
-  return parts.length ? parts : text;
+    if (element.tagName === "A") {
+      if (/^https?:\/\//i.test(href) || href.startsWith("mailto:")) {
+        element.setAttribute("href", href);
+        element.setAttribute("target", "_blank");
+        element.setAttribute("rel", "noopener noreferrer");
+      } else {
+        element.replaceWith(document.createTextNode(element.textContent || ""));
+      }
+    }
+  });
+
+  return template.innerHTML;
 }

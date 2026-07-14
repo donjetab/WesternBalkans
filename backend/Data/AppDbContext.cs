@@ -11,6 +11,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<ContentSection> ContentSections => Set<ContentSection>();
     public DbSet<NewsItem> NewsItems => Set<NewsItem>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

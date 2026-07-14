@@ -20,11 +20,13 @@ builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys")));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<SeedService>();
+builder.Services.AddScoped<DataMigrationService>();
+builder.Services.AddScoped<AuditService>();
 
 builder.Services.AddCors(options =>
 {
@@ -59,6 +61,8 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    await EnsureAuditLogsTableAsync(db);
+    await EnsureAdminUserColumnsAsync(db);
     await EnsureHomepageColumnsAsync(db);
     await EnsureContentPageColumnsAsync(db);
     await EnsureNewsColumnsAsync(db);
@@ -66,6 +70,7 @@ using (var scope = app.Services.CreateScope())
     await BackfillAlbanianContentAsync(db);
     await MigrateDocumentUrlsAsync(db);
     await scope.ServiceProvider.GetRequiredService<SeedService>().SeedAsync();
+    await PromoteSeedAdminAsync(db, scope.ServiceProvider.GetRequiredService<IConfiguration>());
 }
 
 if (app.Environment.IsDevelopment())
@@ -85,11 +90,70 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Temporary migration endpoint - REMOVE AFTER MIGRATION!
+if (app.Environment.IsDevelopment())
+{
+    app.MapPost("/admin/migrate-sqlite-to-sqlserver", async (
+        IServiceProvider serviceProvider,
+        ILogger<Program> logger) =>
+    {
+        try
+        {
+            logger.LogWarning("⚠️  Starting SQLite to SQL Server data migration...");
+            
+            // Create temporary SQLite context
+            var sqliteOptions = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlite("Data Source=edu4migration.db;")
+                .Options;
+            
+            using var sqliteContext = new AppDbContext(sqliteOptions);
+            var sqlServerContext = serviceProvider.GetRequiredService<AppDbContext>();
+            var dataMigrationService = new DataMigrationService(
+                sqliteContext,
+                sqlServerContext,
+                serviceProvider.GetRequiredService<ILogger<DataMigrationService>>());
+            
+            await dataMigrationService.MigrateAllDataAsync();
+            
+            logger.LogInformation("✅ Migration completed successfully!");
+            return Results.Ok(new { message = "✅ Migration completed successfully! Data has been transferred from SQLite to SQL Server." });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "❌ Migration failed: {Message}", ex.Message);
+            return Results.BadRequest(new { error = "Migration failed", details = ex.Message });
+        }
+    }).WithName("MigrateSqliteToSqlServer").Produces(200).Produces(400);
+}
+
 app.MapControllers();
 
 app.Run();
 
-static async Task EnsureHomepageColumnsAsync(AppDbContext db)
+static async Task EnsureAdminUserColumnsAsync(AppDbContext db)
+{
+    var existingColumns = await GetExistingColumnsAsync(db, "AdminUsers");
+
+    var requiredColumns = new Dictionary<string, string>
+    {
+        ["Role"] = "nvarchar(max) NOT NULL DEFAULT('Admin')"
+    };
+
+    await AddMissingColumnsAsync(db.Database.GetDbConnection(), "AdminUsers", existingColumns, requiredColumns);
+}
+
+static async Task PromoteSeedAdminAsync(AppDbContext db, IConfiguration configuration)
+{
+    var seedEmail = configuration["AdminSeed:Email"] ?? "admin@edu4migration.local";
+    var user = await db.AdminUsers.SingleOrDefaultAsync(admin => admin.Email == seedEmail);
+    if (user is null || user.Role == "MainAdmin") return;
+
+    user.Role = "MainAdmin";
+    await db.SaveChangesAsync();
+}
+
+static async Task EnsureAuditLogsTableAsync(AppDbContext db)
 {
     var connection = db.Database.GetDbConnection();
     if (connection.State != System.Data.ConnectionState.Open)
@@ -97,94 +161,94 @@ static async Task EnsureHomepageColumnsAsync(AppDbContext db)
         await connection.OpenAsync();
     }
 
-    var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    await using (var command = connection.CreateCommand())
-    {
-        command.CommandText = "PRAGMA table_info(HomepageContents)";
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            existingColumns.Add(reader.GetString(1));
-        }
-    }
+    await using var command = connection.CreateCommand();
+    command.CommandText = """
+        IF OBJECT_ID(N'[AuditLogs]', N'U') IS NULL
+        BEGIN
+            CREATE TABLE [AuditLogs] (
+                [Id] int IDENTITY(1,1) NOT NULL,
+                [AdminUserId] int NULL,
+                [AdminEmail] nvarchar(max) NOT NULL,
+                [EntityType] nvarchar(max) NOT NULL,
+                [Action] nvarchar(max) NOT NULL,
+                [EntityName] nvarchar(max) NOT NULL,
+                [CreatedAt] datetime2 NOT NULL,
+                CONSTRAINT [PK_AuditLogs] PRIMARY KEY ([Id]),
+                CONSTRAINT [FK_AuditLogs_AdminUsers_AdminUserId] FOREIGN KEY ([AdminUserId]) REFERENCES [AdminUsers] ([Id])
+            );
+            CREATE INDEX [IX_AuditLogs_AdminUserId] ON [AuditLogs] ([AdminUserId]);
+        END
+    """;
+    await command.ExecuteNonQueryAsync();
+}
+
+static async Task EnsureHomepageColumnsAsync(AppDbContext db)
+{
+    var existingColumns = await GetExistingColumnsAsync(db, "HomepageContents");
 
     var requiredColumns = new Dictionary<string, string>
     {
-        ["HeroEyebrowSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["HeroTitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["HeroSubtitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["HeroBodySq"] = "TEXT NOT NULL DEFAULT ''",
-        ["StatsSqJson"] = "TEXT NOT NULL DEFAULT '[]'",
-        ["FocusAreasSqJson"] = "TEXT NOT NULL DEFAULT '[]'"
+        ["HeroEyebrowSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["HeroTitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["HeroSubtitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["HeroBodySq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["StatsSqJson"] = "nvarchar(max) NOT NULL DEFAULT('[]')",
+        ["FocusAreasSqJson"] = "nvarchar(max) NOT NULL DEFAULT('[]')"
     };
 
-    await AddMissingColumnsAsync(connection, "HomepageContents", existingColumns, requiredColumns);
+    await AddMissingColumnsAsync(db.Database.GetDbConnection(), "HomepageContents", existingColumns, requiredColumns);
 }
 
 static async Task EnsureContentPageColumnsAsync(AppDbContext db)
 {
-    var connection = db.Database.GetDbConnection();
-    if (connection.State != System.Data.ConnectionState.Open)
-    {
-        await connection.OpenAsync();
-    }
-
-    var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    await using (var command = connection.CreateCommand())
-    {
-        command.CommandText = "PRAGMA table_info(ContentPages)";
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            existingColumns.Add(reader.GetString(1));
-        }
-    }
+    var existingColumns = await GetExistingColumnsAsync(db, "ContentPages");
 
     var requiredColumns = new Dictionary<string, string>
     {
-        ["EyebrowSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["IntroSq"] = "TEXT NOT NULL DEFAULT ''"
+        ["EyebrowSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["TitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["IntroSq"] = "nvarchar(max) NOT NULL DEFAULT('')"
     };
 
-    await AddMissingColumnsAsync(connection, "ContentPages", existingColumns, requiredColumns);
+    await AddMissingColumnsAsync(db.Database.GetDbConnection(), "ContentPages", existingColumns, requiredColumns);
 }
 
 static async Task EnsureNewsColumnsAsync(AppDbContext db)
 {
-    var connection = db.Database.GetDbConnection();
-    if (connection.State != System.Data.ConnectionState.Open)
-    {
-        await connection.OpenAsync();
-    }
-
-    var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    await using (var command = connection.CreateCommand())
-    {
-        command.CommandText = "PRAGMA table_info(NewsItems)";
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            existingColumns.Add(reader.GetString(1));
-        }
-    }
+    var existingColumns = await GetExistingColumnsAsync(db, "NewsItems");
 
     var requiredColumns = new Dictionary<string, string>
     {
-        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["ExcerptSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["ContentSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["ThumbnailUrl"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentTitle"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentTitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentUrl"] = "TEXT NOT NULL DEFAULT ''",
-        ["GalleryJson"] = "TEXT NOT NULL DEFAULT '[]'"
+        ["TitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["ExcerptSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["ContentSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["ThumbnailUrl"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentTitle"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentTitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentUrl"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["GalleryJson"] = "nvarchar(max) NOT NULL DEFAULT('[]')"
     };
 
-    await AddMissingColumnsAsync(connection, "NewsItems", existingColumns, requiredColumns);
+    await AddMissingColumnsAsync(db.Database.GetDbConnection(), "NewsItems", existingColumns, requiredColumns);
 }
 
 static async Task EnsureContentSectionColumnsAsync(AppDbContext db)
+{
+    var existingColumns = await GetExistingColumnsAsync(db, "ContentSections");
+
+    var requiredColumns = new Dictionary<string, string>
+    {
+        ["TitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["BodySq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentTitle"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentTitleSq"] = "nvarchar(max) NOT NULL DEFAULT('')",
+        ["DocumentUrl"] = "nvarchar(max) NOT NULL DEFAULT('')"
+    };
+
+    await AddMissingColumnsAsync(db.Database.GetDbConnection(), "ContentSections", existingColumns, requiredColumns);
+}
+
+static async Task<HashSet<string>> GetExistingColumnsAsync(AppDbContext db, string tableName)
 {
     var connection = db.Database.GetDbConnection();
     if (connection.State != System.Data.ConnectionState.Open)
@@ -193,26 +257,24 @@ static async Task EnsureContentSectionColumnsAsync(AppDbContext db)
     }
 
     var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-    await using (var command = connection.CreateCommand())
+    await using var command = connection.CreateCommand();
+    command.CommandText = @"
+        SELECT COLUMN_NAME
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = @tableName";
+
+    var param = command.CreateParameter();
+    param.ParameterName = "@tableName";
+    param.Value = tableName;
+    command.Parameters.Add(param);
+
+    await using var reader = await command.ExecuteReaderAsync();
+    while (await reader.ReadAsync())
     {
-        command.CommandText = "PRAGMA table_info(ContentSections)";
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            existingColumns.Add(reader.GetString(1));
-        }
+        existingColumns.Add(reader.GetString(0));
     }
 
-    var requiredColumns = new Dictionary<string, string>
-    {
-        ["TitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["BodySq"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentTitle"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentTitleSq"] = "TEXT NOT NULL DEFAULT ''",
-        ["DocumentUrl"] = "TEXT NOT NULL DEFAULT ''"
-    };
-
-    await AddMissingColumnsAsync(connection, "ContentSections", existingColumns, requiredColumns);
+    return existingColumns;
 }
 
 static async Task AddMissingColumnsAsync(
@@ -226,7 +288,7 @@ static async Task AddMissingColumnsAsync(
         if (existingColumns.Contains(name)) continue;
 
         await using var command = connection.CreateCommand();
-        command.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {name} {definition}";
+        command.CommandText = $"ALTER TABLE {tableName} ADD {name} {definition}";
         await command.ExecuteNonQueryAsync();
     }
 }
