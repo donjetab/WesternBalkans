@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e63dee765c18f485bf6ac94c026678e2a0d484e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d2791aa4e3a5d4ed8f386de9f018d2f7fc044aa")]
 [assembly: System.Reflection.AssemblyProductAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Edu4Migration.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

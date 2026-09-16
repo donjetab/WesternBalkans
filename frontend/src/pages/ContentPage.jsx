@@ -31,6 +31,10 @@ export function ContentPage({ slug }) {
   const isEventsPage = slug === "events";
   const isOverviewPage = slug === "overview";
   const isDownloadsPage = slug === "downloads";
+  const pageLayout = [
+    "management", "objectives", "outcomes", "work-packages", "deliverables",
+    "milestones", "courses", "documents", "downloads", "case-studies"
+  ].includes(slug) ? slug : "standard";
 
   useEffect(() => {
     setPage({ ...emptyPage, slug });
@@ -60,14 +64,15 @@ export function ContentPage({ slug }) {
         title={localized(page.title, page.titleSq, language)}
         intro={localized(page.intro, page.introSq, language)}
       />
-      <SectionReveal className="section">
-        <div className={`container ${isEventsPage ? "events-list" : "content-grid"}`}>
+      <SectionReveal className={`section content-page-section ${pageLayout}-layout`}>
+        <div className={`container ${isEventsPage ? "events-list" : `content-grid ${pageLayout}-grid`}`}>
           {sections?.map((section, index) => {
             const Icon = contentIcons[index % contentIcons.length];
             const hasDocument = Boolean(section.documentUrl);
 
             return isEventsPage ? <EventCard section={section} key={section.title} language={language} /> : (
               <article className="content-card" key={section.title}>
+                {pageLayout !== "standard" ? <span className="content-card-index">{String(index + 1).padStart(2, "0")}</span> : null}
                 <div className="content-card-icon"><Icon size={28} /></div>
                 <h3>{localized(section.title, section.titleSq, language)}</h3>
                 <p>{localized(section.body, section.bodySq, language)}</p>

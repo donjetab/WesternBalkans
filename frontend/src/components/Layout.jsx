@@ -12,10 +12,30 @@ export function Layout() {
   const { language, setLanguage, navLabel, t } = useLanguage();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 18);
-    onScroll();
+    let frame = 0;
+
+    const updateScrollEffects = () => {
+      const scrollY = window.scrollY;
+      setScrolled(scrollY > 18);
+      document.documentElement.style.setProperty("--parallax-hero", `${Math.min(scrollY * .055, 72)}px`);
+      document.documentElement.style.setProperty("--parallax-detail", `${Math.min(scrollY * .09, 110)}px`);
+      document.documentElement.style.setProperty("--parallax-up", `${-Math.min(scrollY * .045, 58)}px`);
+      frame = 0;
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateScrollEffects);
+    };
+
+    updateScrollEffects();
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+      document.documentElement.style.removeProperty("--parallax-hero");
+      document.documentElement.style.removeProperty("--parallax-detail");
+      document.documentElement.style.removeProperty("--parallax-up");
+    };
   }, []);
 
   return (
@@ -67,9 +87,6 @@ export function Layout() {
           <NavLink to="/contact" onClick={() => setOpen(false)}>
             {t("contactShort")}
           </NavLink>
-          <div className="mobile-language-switcher">
-            <LanguageSwitcher language={language} setLanguage={setLanguage} />
-          </div>
         </nav>
       </header>
       <main>
@@ -96,6 +113,7 @@ function DesktopNavGroup({ item }) {
         <ChevronDown size={15} />
       </button>
       <div className="nav-dropdown">
+        <span className="nav-dropdown-kicker">{navLabel(item.label)}</span>
         {item.items.map((child) => (
           <NavLink key={child.to} to={child.to} onClick={closeDropdown}>
             {navLabel(child.label)}
@@ -121,29 +139,33 @@ function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
-        <div>
+        <div className="footer-brand">
           <img className="footer-logo" src="/assets/logo.png" alt="Western Balkans Edu4Migration" />
           <p>{t("footerText")}</p>
         </div>
-        <div>
+        <div className="footer-column">
           <h4>{t("footerExplore")}</h4>
           <NavLink to="/overview">{navLabel("Project Overview")}</NavLink>
           <NavLink to="/partners">{navLabel("Project Partners")}</NavLink>
           <NavLink to="/events">{navLabel("Events")}</NavLink>
           <NavLink to="/news">{navLabel("News")}</NavLink>
         </div>
-        <div>
+        <div className="footer-column">
           <h4>{navLabel("Resources")}</h4>
           <NavLink to="/courses">{navLabel("Courses")}</NavLink>
           <NavLink to="/documents">{navLabel("Project Documents")}</NavLink>
           <NavLink to="/case-studies">{navLabel("Case Studies and Reports")}</NavLink>
           <NavLink to="/downloads">{navLabel("Downloadable Documents")}</NavLink>
         </div>
-        <div>
+        <div className="footer-column">
           <h4>{t("footerContact")}</h4>
           <a href="mailto:wbedu4migrationproject@gmail.com">wbedu4migrationproject@gmail.com</a>
           <NavLink to="/admin/login">Admin panel</NavLink>
         </div>
+      </div>
+      <div className="container footer-bottom">
+        <span>© {new Date().getFullYear()} Edu4Migration</span>
+        <span>Co-funded by the European Union</span>
       </div>
     </footer>
   );

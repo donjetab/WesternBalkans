@@ -116,9 +116,13 @@ export function Home() {
               const Icon = focusIcons[index] || BookOpen;
               return (
                 <article className="feature-card" key={area.title}>
-                  <div className="icon-box"><Icon size={24} /></div>
+                  <div className="feature-card-top">
+                    <div className="icon-box"><Icon size={24} /></div>
+                    <span className="feature-card-number">0{index + 1}</span>
+                  </div>
                   <h3>{area.title}</h3>
                   <p>{area.body}</p>
+                  <span className="feature-card-arrow" aria-hidden="true"><ArrowRight size={19} /></span>
                 </article>
               );
             })}
@@ -170,13 +174,17 @@ export function Home() {
       </SectionReveal>
 
       <section className="cta-band">
+        <div className="cta-orbit cta-orbit-one" aria-hidden="true"></div>
+        <div className="cta-orbit cta-orbit-two" aria-hidden="true"></div>
         <div className="container cta-band-inner">
-          <div className="cta-icon"><UsersRound size={32} /></div>
-          <div>
-            <span className="eyebrow">{t("stayConnected")}</span>
-            <h2>{t("stayConnectedText")}</h2>
+          <div className="cta-copy">
+            <div className="cta-icon"><UsersRound size={30} /></div>
+            <div>
+              <span className="eyebrow">{t("stayConnected")}</span>
+              <h2>{t("stayConnectedText")}</h2>
+            </div>
           </div>
-          <Link className="btn btn-primary" to="/contact">{t("contactDetails")}</Link>
+          <Link className="btn btn-primary cta-button" to="/contact">{t("contactDetails")} <ArrowRight size={18} /></Link>
         </div>
       </section>
     </>
