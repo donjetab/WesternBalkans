@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&display=swap');
+
+/* Public page type system. Homepage sizes remain in home.css. */
+.public-shell {
+  font-family: Outfit, system-ui, sans-serif;
+  font-weight: 400;
+}
+.public-shell:not(.reference-home) main h1,
+.public-shell:not(.reference-home) main h2,
+.public-shell:not(.reference-home) main h3 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+.public-shell:not(.reference-home) main h2 {
+  font-size: clamp(1.85rem, 3.4vw, 2.75rem);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.public-shell:not(.reference-home) main h3 {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  letter-spacing: -.01em;
+}
+.public-shell:not(.reference-home) main p {
+  font-size: .9375rem;
+  line-height: 1.8;
+  font-weight: 400;
+}
+.public-shell:not(.reference-home) .page-hero p,
+.public-shell:not(.reference-home) .overview-hero p,
+.public-shell:not(.reference-home) .partners-hero p {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.public-shell:not(.reference-home) .eyebrow {
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  line-height: 1.6;
+}
+.public-shell:not(.reference-home) .btn {
+  font-family: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.public-shell:not(.reference-home) .news-date,
+.public-shell:not(.reference-home) .text-link,
+.public-shell:not(.reference-home) .content-card-action,
+.public-shell:not(.reference-home) .news-hero-back,
+.public-shell:not(.reference-home) .news-hero-date {
+  font-size: .8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.public-shell:not(.reference-home) .news-detail-content h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.public-shell:not(.reference-home) .news-detail-content h3 {
+  font-size: 1.3rem;
+}
+.public-shell:not(.reference-home) .news-detail-content p,
+.public-shell:not(.reference-home) .news-detail-content li {
+  font-size: 1rem;
+  line-height: 1.85;
+}
+.public-shell:not(.reference-home) .overview-impact h2 {
+  font-size: 1.75rem;
+}
+@media (max-width: 760px) {
+  .public-shell:not(.reference-home) .page-hero h1,
+  .public-shell:not(.reference-home) .overview-hero h1,
+  .public-shell:not(.reference-home) .partners-hero h1 {
+    font-size: clamp(2.1rem, 8.5vw, 3rem);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .public-shell:not(.reference-home) .page-hero.news-detail-hero h1 {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+    line-height: 1.2;
+  }
+  .public-shell:not(.reference-home) main h2 {
+    font-size: clamp(1.6rem, 6.8vw, 2rem);
+  }
+  .public-shell:not(.reference-home) main h3 {
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+  .public-shell:not(.reference-home) main p {
+    font-size: .875rem;
+    line-height: 1.8;
+  }
+  .public-shell:not(.reference-home) .page-hero p,
+  .public-shell:not(.reference-home) .overview-hero p,
+  .public-shell:not(.reference-home) .partners-hero p {
+    font-size: .9375rem;
+    line-height: 1.75;
+  }
+  .public-shell:not(.reference-home) .btn {
+    width: auto;
+    max-width: 100%;
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: .75rem;
+  }
+  .public-shell:not(.reference-home) .eyebrow {
+    font-size: .625rem;
+    letter-spacing: .16em;
+  }
+  .public-shell:not(.reference-home) .news-detail-content p,
+  .public-shell:not(.reference-home) .news-detail-content li {
+    font-size: .9375rem;
+    line-height: 1.85;
+  }
+}

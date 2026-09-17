@@ -1,3 +1,7 @@
+import { fallbackData } from "../data/fallbackData.js";
+
+export const isStaticPreview = import.meta.env.VITE_STATIC_PREVIEW === "true";
+let useLocalMedia = isStaticPreview;
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5088/api";
 const API_ORIGIN = API_BASE.replace(/\/api\/?$/, "");
 const TOKEN_KEY = "edu4migration_admin_token";
@@ -44,10 +48,10 @@ export function resolveMediaUrl(url = "") {
   }
 
   if (url.startsWith("/uploads/")) {
-    return `${API_ORIGIN}${url}`;
+    return useLocalMedia ? `${import.meta.env.BASE_URL}${url.slice(1)}` : `${API_ORIGIN}${url}`;
   }
 
-  return url;
+  return url.startsWith("/assets/") ? `${import.meta.env.BASE_URL}${url.slice(1)}` : url;
 }
 
 async function request(path, options = {}) {
@@ -78,12 +82,37 @@ async function request(path, options = {}) {
   return response.json();
 }
 
+// Temporary public-content fallback. Authentication and edits always require the backend.
+function getFallback(path) {
+  if (path === "/content/homepage") return structuredClone(fallbackData.homepage);
+  if (path.startsWith("/content/pages/")) {
+    const page = fallbackData.pages[path.slice("/content/pages/".length)];
+    if (page) return structuredClone(page);
+  }
+  if (path === "/news") return structuredClone(fallbackData.news);
+  if (/^\/news\/\d+$/.test(path)) {
+    const item = fallbackData.news.find((item) => String(item.id) === path.slice(6));
+    if (item) return structuredClone(item);
+  }
+  throw new Error("No public fallback for " + path);
+}
+
+async function publicRequest(path) {
+  if (isStaticPreview) return getFallback(path);
+  try {
+    return await request(path, { timeout: 4000 });
+  } catch (error) {
+    useLocalMedia = true;
+    return getFallback(path);
+  }
+}
+
 async function cachedPublicRequest(path) {
   if (cache.has(path)) {
     return cache.get(path);
   }
 
-  const data = await request(path);
+  const data = await publicRequest(path);
   cache.set(path, data);
   return data;
 }
@@ -114,22 +143,22 @@ export const api = {
   updateAdminUser: (id, payload) => request(`/adminusers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteAdminUser: (id) => request(`/adminusers/${id}`, { method: "DELETE" }),
   changePassword: (currentPassword, newPassword) => request("/adminusers/change-password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) }),
-  getHomepage: () => request("/content/homepage"),
+  getHomepage: () => publicRequest("/content/homepage"),
   getHomepageFast: () => cachedPublicRequest("/content/homepage"),
   updateHomepage: async (payload) => {
     const data = await request("/content/homepage", { method: "PUT", body: JSON.stringify(payload) });
     cache.delete("/content/homepage");
     return data;
   },
-  getPage: (slug) => request(`/content/pages/${slug}`),
+  getPage: (slug) => publicRequest(`/content/pages/${slug}`),
   getPageFast: (slug) => cachedPublicRequest(`/content/pages/${slug}`),
   updatePage: async (slug, payload) => {
     const data = await request(`/content/pages/${slug}`, { method: "PUT", body: JSON.stringify(payload) });
     cache.delete(`/content/pages/${slug}`);
     return data;
   },
-  getNews: (includeDrafts = false) => request(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
-  getNewsFast: (includeDrafts = false) => cachedPublicRequest(`/news${includeDrafts ? "?includeDrafts=true" : ""}`),
+  getNews: (includeDrafts = false) => includeDrafts ? request("/news?includeDrafts=true") : publicRequest("/news"),
+  getNewsFast: (includeDrafts = false) => includeDrafts ? request("/news?includeDrafts=true") : cachedPublicRequest("/news"),
   getNewsItemFast: async (id) => {
     if (!id) return null;
     return cachedPublicRequest(`/news/${id}`);

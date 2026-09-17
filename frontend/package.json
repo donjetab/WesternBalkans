@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "build:github": "vite build --mode github --base /WesternBalkans/",
+    "deploy:github": "npm run build:github && node scripts/publishGithub.cjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
@@ -21,5 +23,4 @@
   "devDependencies": {
     "gh-pages": "^6.3.0"
   }
-
 }

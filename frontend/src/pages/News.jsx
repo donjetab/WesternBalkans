@@ -22,7 +22,7 @@ export function News() {
 
   return (
     <>
-      <PageHero eyebrow={t("newsEyebrow")} title={t("newsTitle")} intro={t("newsIntro")} />
+      <PageHero className="news-list-hero" eyebrow={t("newsEyebrow")} title={t("newsTitle")} intro={t("newsIntro")} />
       <SectionReveal className="section news-list-section">
         <div className="container news-grid">
           {news.map((item) => <NewsCard item={item} key={item.id} />)}

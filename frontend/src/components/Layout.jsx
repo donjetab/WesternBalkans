@@ -1,13 +1,16 @@
 import React from "react";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, UsersRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import { navItems } from "../data/siteStructure.js";
+import "../styles/public-shell.css";
 
 export function Layout() {
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState("");
+  const [desktopGroup, setDesktopGroup] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const { language, setLanguage, navLabel, t } = useLanguage();
 
@@ -38,15 +41,29 @@ export function Layout() {
     };
   }, []);
 
+  useEffect(() => {
+    setOpen(false);
+    setOpenGroup("");
+    setDesktopGroup("");
+  }, [pathname]);
+
+  useEffect(() => {
+    const dismiss = (event) => {
+      if (!event.target.closest(".desktop-nav")) setDesktopGroup("");
+    };
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, []);
+
   return (
-    <div className="page-shell">
+    <div className={`page-shell public-shell ${pathname === "/" ? "reference-home" : ""}`}>
       <header className={`site-header ${scrolled || open ? "scrolled" : ""}`}>
         <div className="container nav">
           <NavLink to="/" className="brand" onClick={() => setOpen(false)}>
-            <img src="/assets/logo.png" alt="Western Balkans Edu4Migration" />
+            <img src={`${import.meta.env.BASE_URL}assets/logo.png`} alt="Western Balkans Edu4Migration" />
           </NavLink>
           <nav className="desktop-nav">
-            {navItems.map((item) => item.items ? <DesktopNavGroup item={item} key={item.label} /> : (
+            {navItems.map((item) => item.items ? <DesktopNavGroup item={item} key={item.label} open={desktopGroup === item.label} setOpen={(value) => setDesktopGroup(value ? item.label : "")} /> : (
               <NavLink key={item.to} to={item.to}>
                 {navLabel(item.label)}
               </NavLink>
@@ -56,22 +73,24 @@ export function Layout() {
             {t("contact")}
           </NavLink>
           <LanguageSwitcher language={language} setLanguage={setLanguage} />
-          <button className="icon-btn menu-btn" type="button" aria-label="Toggle menu" onClick={() => setOpen((value) => !value)}>
+          <button className="icon-btn menu-btn" type="button" aria-label="Toggle menu" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen((value) => !value)}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
-        <nav className={`mobile-nav ${open ? "open" : ""}`}>
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className={`mobile-nav ${open ? "open" : ""}`}>
           {navItems.map((item) => item.items ? (
             <div className="mobile-nav-group" key={item.label}>
               <button
                 className="mobile-nav-group-trigger"
+                aria-expanded={openGroup === item.label}
+                aria-controls={`mobile-links-${item.label.toLowerCase()}`}
                 type="button"
                 onClick={() => setOpenGroup((current) => current === item.label ? "" : item.label)}
               >
                 {navLabel(item.label)}
                 <ChevronDown size={16} />
               </button>
-              <div className={`mobile-nav-group-links ${openGroup === item.label ? "open" : ""}`}>
+              <div id={`mobile-links-${item.label.toLowerCase()}`} className={`mobile-nav-group-links ${openGroup === item.label ? "open" : ""}`}>
                 {item.items.map((child) => (
                   <NavLink key={child.to} to={child.to} onClick={() => setOpen(false)}>
                     {navLabel(child.label)}
@@ -92,30 +111,52 @@ export function Layout() {
       <main>
         <Outlet />
       </main>
+      <ProjectCta />
       <Footer />
     </div>
   );
 }
 
-function DesktopNavGroup({ item }) {
+function DesktopNavGroup({ item, open, setOpen }) {
   const { navLabel } = useLanguage();
-  const [closedAfterClick, setClosedAfterClick] = useState(false);
-
-  function closeDropdown() {
-    setClosedAfterClick(true);
-    document.activeElement?.blur?.();
-  }
+  const { pathname } = useLocation();
+  const active = item.items.some((child) => pathname === child.to);
+  const id = `nav-links-${item.label.toLowerCase()}`;
 
   return (
-    <div className={`nav-group ${closedAfterClick ? "is-closed" : ""}`} onMouseLeave={() => setClosedAfterClick(false)}>
-      <button className="nav-group-trigger" type="button">
+    <div
+      className={`nav-group ${open ? "is-open" : ""}`}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          setOpen(false);
+          event.currentTarget.querySelector("button").focus();
+        }
+        if (event.key === "ArrowDown" && event.target.tagName === "BUTTON") {
+          event.preventDefault();
+          setOpen(true);
+          const firstLink = event.currentTarget.querySelector("a");
+          window.requestAnimationFrame(() => firstLink?.focus());
+        }
+      }}
+    >
+      <button
+        className={`nav-group-trigger ${active ? "active" : ""}`}
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+      >
         {navLabel(item.label)}
         <ChevronDown size={15} />
       </button>
-      <div className="nav-dropdown">
-        <span className="nav-dropdown-kicker">{navLabel(item.label)}</span>
+      <div id={id} className="nav-dropdown" aria-label={navLabel(item.label)}>
         {item.items.map((child) => (
-          <NavLink key={child.to} to={child.to} onClick={closeDropdown}>
+          <NavLink key={child.to} to={child.to} onClick={() => setOpen(false)}>
             {navLabel(child.label)}
           </NavLink>
         ))}
@@ -126,10 +167,18 @@ function DesktopNavGroup({ item }) {
 
 function LanguageSwitcher({ language, setLanguage }) {
   return (
-    <div className="language-switcher" aria-label="Choose language">
-      <button className={language === "en" ? "active" : ""} type="button" onClick={() => setLanguage("en")}>EN</button>
-      <button className={language === "sq" ? "active" : ""} type="button" onClick={() => setLanguage("sq")}>SQ</button>
-    </div>
+    <button
+      className={`language-toggle ${language === "sq" ? "is-sq" : ""}`}
+      type="button"
+      role="switch"
+      aria-checked={language === "sq"}
+      aria-label="Albanian language"
+      onClick={() => setLanguage(language === "en" ? "sq" : "en")}
+    >
+      <span className="language-toggle-thumb" aria-hidden="true" />
+      <span className="language-toggle-label" aria-hidden="true">EN</span>
+      <span className="language-toggle-label" aria-hidden="true">SQ</span>
+    </button>
   );
 }
 
@@ -168,5 +217,23 @@ function Footer() {
         <span>Co-funded by the European Union</span>
       </div>
     </footer>
+  );
+}
+
+function ProjectCta() {
+  const { t } = useLanguage();
+  return (
+      <section className="cta-band">
+        <div className="container cta-band-inner">
+          <div className="cta-copy">
+            <div className="cta-icon"><UsersRound size={30} /></div>
+            <div>
+              <span className="eyebrow">{t("stayConnected")}</span>
+              <h2>{t("stayConnectedText")}</h2>
+            </div>
+          </div>
+          <Link className="btn btn-primary cta-button" to="/contact">{t("contactDetails")} <ArrowRight size={18} /></Link>
+        </div>
+      </section>
   );
 }
