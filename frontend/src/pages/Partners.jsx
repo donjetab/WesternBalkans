@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { SectionReveal } from "../components/SectionReveal.jsx";
 import { useLanguage } from "../context/LanguageContext.jsx";
@@ -43,9 +44,9 @@ export function Partners() {
           <span className="eyebrow">{t("consortium")}</span>
           <h1>{t("projectPartners")}</h1>
           <p>{t("partnersHeroIntro")}</p>
-          <a className="btn btn-primary" href="#partners-list">
+          <Link className="btn btn-primary" to={{ pathname: "/partners", hash: "#partners-list" }}>
             {t("learnMoreProject")} <ArrowRight size={17} />
-          </a>
+          </Link>
         </div>
       </section>
 

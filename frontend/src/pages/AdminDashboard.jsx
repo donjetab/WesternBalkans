@@ -951,7 +951,7 @@ export function AdminDashboard() {
           <Menu size={22} />
         </button>
         <div className="admin-mobile-brand">
-          <img src="/assets/logo.png" alt="" />
+          <img src={`${import.meta.env.BASE_URL}assets/logo.png`} alt="" />
           <strong>Edu4Migration CMS</strong>
         </div>
         <div className="admin-mobile-profile">
@@ -989,7 +989,7 @@ export function AdminDashboard() {
       />
       <aside className={`admin-sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="admin-brand">
-          <img src="/assets/logo.png" alt="" />
+          <img src={`${import.meta.env.BASE_URL}assets/logo.png`} alt="" />
           <div>
             <strong>Edu4Migration CMS</strong>
             {/* <span>{t("contentManagement")}</span> */}

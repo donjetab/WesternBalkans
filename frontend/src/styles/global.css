@@ -969,7 +969,7 @@ p {
     display: none;
   }
 
-  .mobile-nav > a[href="/contact"] {
+  .mobile-nav > a[href$="/contact"] {
     background: var(--accent);
     border: 0;
     border-radius: 10px;

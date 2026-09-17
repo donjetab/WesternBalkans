@@ -189,7 +189,7 @@ function Footer() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <img className="footer-logo" src="/assets/logo.png" alt="Western Balkans Edu4Migration" />
+          <img className="footer-logo" src={`${import.meta.env.BASE_URL}assets/logo.png`} alt="Western Balkans Edu4Migration" />
           <p>{t("footerText")}</p>
         </div>
         <div className="footer-column">
