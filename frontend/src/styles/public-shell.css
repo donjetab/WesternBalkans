@@ -8,9 +8,9 @@
 .public-shell .language-switcher { border-radius:0; }
 .public-shell .cta-band h2 { font-family:Fraunces,Georgia,serif; font-weight:600; }
 .public-shell .cta-band { background:var(--cta-surround, var(--ivory)); color:#fff; padding:24px 0 80px; margin:0; }
-.public-shell .cta-band-inner { width:var(--container); min-height:0; padding:52px 48px; background:radial-gradient(ellipse at 100% 0%, rgba(224, 123, 46, .16), transparent 60%), linear-gradient(120deg, #101d2d, #17283b); border:1px solid #ffffff14; border-radius:24px; box-shadow:0 16px 40px rgba(14, 21, 32, .12); gap:40px; }
+.public-shell .cta-band-inner { width:var(--container); min-height:0; padding:52px 48px; background:radial-gradient(ellipse at 100% 0%, rgba(68, 174, 244, .2), transparent 60%), linear-gradient(120deg, #101d2d, #17283b); border:1px solid #ffffff14; border-radius:24px; box-shadow:0 16px 40px rgba(14, 21, 32, .12); gap:40px; }
 .public-shell .cta-copy { gap:24px; }
-.public-shell .cta-icon { background:#e07b2e1a; border:1px solid #e07b2e40; color:#f5a56c; border-radius:16px; width:64px; height:64px; box-shadow:none; }
+.public-shell .cta-icon { background:#45adf526; border:1px solid #63c3ff66; color:#63c3ff; border-radius:16px; width:64px; height:64px; box-shadow:none; }
 .public-shell .cta-band h2 { color:#fff; font-size:clamp(1.6rem, 2.5vw, 2.1rem); line-height:1.4; margin:0; max-width:680px; }
 .public-shell .cta-button { background:var(--accent); color:#fff; border:0; }
 .public-shell .site-footer { background:#0e1520; border-top:1px solid #ffffff1a; color:#ffffff99; }
@@ -19,7 +19,7 @@
 .public-shell .site-footer a { font-weight:300; }
 .public-shell .footer-column { min-width:0; overflow-wrap:anywhere; }
 .public-shell .footer-bottom { color:#ffffff80; }
-.public-shell { --navy:#0e1520; --navy-soft:#17283b; --text:#0e1520; --accent:#e07b2e; --shell-width:min(1280px, calc(100% - 80px)); }
+.public-shell { --navy:#0e1520; --navy-soft:#17283b; --text:#0e1520; --accent:#1474bd; --accent-bright:#63c3ff; --shell-width:min(1280px, calc(100% - 80px)); }
 .public-shell .site-header, .public-shell .site-header.scrolled, .public-shell .cta-band, .public-shell .site-footer { font-family:Outfit,system-ui,sans-serif; }
 .public-shell:not(.reference-home) .site-header { position:fixed; background:transparent; border-color:transparent; }
 .public-shell:not(.reference-home) .site-header.scrolled { background:rgba(14,21,32,.95); border-color:#ffffff1a; backdrop-filter:blur(16px); }
@@ -35,7 +35,7 @@
 .public-shell .language-toggle-label { position:relative; width:50%; text-align:center; transition:color .22s ease; }
 .public-shell .language-toggle:not(.is-sq) .language-toggle-label:nth-child(2), .public-shell .language-toggle.is-sq .language-toggle-label:last-child { color:#0e1520; }
 .public-shell .language-toggle:focus-visible, .public-shell .site-header a:focus-visible, .public-shell .site-header button:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
-.public-shell .cta-band .eyebrow { color:#f5a56c; font-size:.75rem; letter-spacing:.22em; font-weight:600; margin-bottom:12px; }
+.public-shell .cta-band .eyebrow { color:#63c3ff; font-size:.75rem; letter-spacing:.22em; font-weight:600; margin-bottom:12px; }
 .public-shell .cta-button { border-radius:999px; box-shadow:none; font-size:.875rem; font-weight:600; padding:16px 24px; }
 .public-shell .cta-button:hover { background:#c76622; color:#fff; }
 @media(max-width:1120px) {
@@ -128,7 +128,7 @@
   background: #ffffff0d;
 }
 .public-shell .desktop-nav .nav-dropdown a.active {
-  color: #f5a56c;
+  color: #63c3ff;
   background: transparent;
 }
 @media (max-width: 1120px) {
@@ -139,7 +139,7 @@
   .public-shell .mobile-nav-group-links a { display:block; padding:12px; margin:0; color:#ffffffb3; font-size:.9rem; line-height:1.45; border:0; background:transparent; border-radius:6px; }
   .public-shell .mobile-nav-group-links a::before { display:none; }
   .public-shell .mobile-nav-group-links a:hover { color:#fff; background:#ffffff0d; }
-  .public-shell .mobile-nav-group-links a.active { color:#f5a56c; background:transparent; }
+  .public-shell .mobile-nav-group-links a.active { color:#63c3ff; background:transparent; }
 }
 @media (prefers-reduced-motion: reduce) {
   .public-shell .nav-dropdown, .public-shell .nav-group-trigger svg { transition:none; }
@@ -221,13 +221,13 @@
 
 /* Match the CTA surround to the preceding page content. */
 .reference-home { --cta-surround: #f4f6f9; }
-.public-shell:has(main > .overview-section) { --cta-surround: #fffaf4; }
+.public-shell:has(main > .overview-section) { --cta-surround: #f5faff; }
 .public-shell:has(main > .management-layout) { --cta-surround: linear-gradient(115deg, #f8f5ef 0%, #fff 50%, #edf5f2 100%); }
 .public-shell:has(main > .objectives-layout) { --cta-surround: #fbfaf7; }
 .public-shell:has(main > .outcomes-layout) { --cta-surround: radial-gradient(circle at 50% 0, rgba(45,122,115,.13), transparent 27rem), #fbfaf7; }
 .public-shell:has(main > .work-packages-layout) { --cta-surround: #f7f4ee; }
 .public-shell:has(main > .deliverables-layout) { --cta-surround: linear-gradient(115deg, #f7f4ee, #fff); }
-.public-shell:has(main > .milestones-layout) { --cta-surround: radial-gradient(circle at 90% 15%, rgba(216,121,69,.12), transparent 25rem), #fbfaf7; }
+.public-shell:has(main > .milestones-layout) { --cta-surround: radial-gradient(circle at 90% 15%, rgba(20,116,189,.12), transparent 25rem), #fbfaf7; }
 .public-shell:has(main > .courses-layout) { --cta-surround: linear-gradient(145deg, #edf5f2, #fbfaf7 48%, #f8f2ea); }
 .public-shell:has(main > .documents-layout) { --cta-surround: #f7f4ee; }
 .public-shell:has(main > .downloads-layout) { --cta-surround: #f7f4ee; }

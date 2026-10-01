@@ -2259,8 +2259,11 @@ function RichTextEditor({ label, onChange, value }) {
     }
 
     setActiveFormats({
-      bold: Boolean(closestFormat(range.startContainer, "strong") || closestFormat(range.startContainer, "b") || closestStyledFormat(range.startContainer, "bold")),
-      italic: Boolean(closestFormat(range.startContainer, "em") || closestFormat(range.startContainer, "i") || closestStyledFormat(range.startContainer, "italic")),
+      // queryCommandState includes the pending typing state at a collapsed
+      // caret. Checking ancestor tags here would incorrectly turn a format
+      // back on while the caret is leaving an existing <strong>/<em> run.
+      bold: document.queryCommandState("bold"),
+      italic: document.queryCommandState("italic"),
       link: Boolean(getSelectedLink(range))
     });
   }
@@ -2366,34 +2369,31 @@ function RichTextEditor({ label, onChange, value }) {
   function applyInlineFormat(tagName) {
     const editor = editorRef.current;
     const range = getEditorRange();
-    if (!editor || !range || range.collapsed) {
+    if (!editor || !range) {
       editor?.focus({ preventScroll: true });
       return;
     }
 
     const command = tagName === "strong" ? "bold" : "italic";
     restoreSelection();
+    editor.focus({ preventScroll: true });
     document.execCommand(command, false, null);
-    normalizeEditorFormatting();
+
+    // Rewriting the DOM at a collapsed caret clears the browser's pending
+    // formatting state, so only normalize markup when actual text changed.
+    if (!range.collapsed) {
+      normalizeEditorFormatting();
+    }
 
     const selection = window.getSelection();
     if (selection?.rangeCount) {
-      selection.collapseToEnd();
-      const caretRange = selection.rangeCount ? selection.getRangeAt(0) : null;
-      const activeNode = caretRange?.startContainer;
-      const formatElement = closestFormat(activeNode, tagName)
-        || (tagName === "strong" ? closestFormat(activeNode, "b") || closestStyledFormat(activeNode, "bold") : closestFormat(activeNode, "i") || closestStyledFormat(activeNode, "italic"));
-
-      if (formatElement) {
-        placeNormalCaretAfter(formatElement);
-      } else if (caretRange) {
-        savedRangeRef.current = caretRange.cloneRange();
-      }
+      savedRangeRef.current = selection.getRangeAt(0).cloneRange();
     }
 
-    editor.focus({ preventScroll: true });
     updateActiveFormats();
-    syncEditor();
+    if (!range.collapsed) {
+      syncEditor();
+    }
   }
 
   function openLinkPanel() {
@@ -2479,8 +2479,8 @@ function RichTextEditor({ label, onChange, value }) {
     <div className="full rich-text-field">
       <span>{label}</span>
       <div className="rich-text-toolbar" aria-label="Formatting tools">
-        <button className={activeFormats.bold ? "active" : ""} type="button" onMouseDown={(event) => { event.preventDefault(); rememberSelection(); }} onClick={() => applyInlineFormat("strong")}><Bold size={16} /> Bold</button>
-        <button className={activeFormats.italic ? "active" : ""} type="button" onMouseDown={(event) => { event.preventDefault(); rememberSelection(); }} onClick={() => applyInlineFormat("em")}><Italic size={16} /> Italic</button>
+        <button className={activeFormats.bold ? "active" : ""} type="button" onMouseDown={(event) => { event.preventDefault(); applyInlineFormat("strong"); }}><Bold size={16} /> Bold</button>
+        <button className={activeFormats.italic ? "active" : ""} type="button" onMouseDown={(event) => { event.preventDefault(); applyInlineFormat("em"); }}><Italic size={16} /> Italic</button>
         <button className={activeFormats.link ? "active" : ""} type="button" onMouseDown={(event) => { event.preventDefault(); rememberSelection(); }} onClick={openLinkPanel}><Link2 size={16} /> Link</button>
       </div>
       {linkDraft.open ? (

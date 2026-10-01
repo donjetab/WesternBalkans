@@ -1,8 +1,10 @@
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using Edu4Migration.Api.Data;
 using Edu4Migration.Api.Models;
+using Edu4Migration.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +13,7 @@ namespace Edu4Migration.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MediaController(AppDbContext db, IWebHostEnvironment environment) : ControllerBase
+public class MediaController(AppDbContext db, IWebHostEnvironment environment, AuditService audit) : ControllerBase
 {
     [HttpPost("upload")]
     [Authorize(Roles = "Admin,MainAdmin")]
@@ -34,6 +36,11 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         if (!allowed.Contains(extension))
         {
             return BadRequest("Unsupported file type.");
+        }
+
+        if (!await HasExpectedFileSignatureAsync(file, extension))
+        {
+            return BadRequest("The file contents do not match the selected file type.");
         }
 
         var uploadsPath = Path.Combine(environment.ContentRootPath, "Uploads");
@@ -63,6 +70,7 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
 
         db.MediaAssets.Add(asset);
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "Media", "Uploaded", asset.FileName);
         return Ok(asset);
     }
 
@@ -79,6 +87,7 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         DeleteFile(asset.Url);
         db.MediaAssets.Remove(asset);
         await db.SaveChangesAsync();
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "Media", "Deleted", asset.FileName);
         return NoContent();
     }
 
@@ -94,6 +103,8 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
             db.MediaAssets.Remove(asset);
             await db.SaveChangesAsync();
         }
+
+        await audit.LogAsync(GetCurrentUserId(), GetCurrentEmail(), "Media", "Deleted", asset?.FileName ?? url);
 
         return NoContent();
     }
@@ -168,18 +179,60 @@ public class MediaController(AppDbContext db, IWebHostEnvironment environment) :
         const string uploadsPrefix = "/uploads/";
         if (!url.StartsWith(uploadsPrefix, StringComparison.OrdinalIgnoreCase)) return;
 
-        var relativePath = Uri.UnescapeDataString(url[uploadsPrefix.Length..]).Replace("/", Path.DirectorySeparatorChar.ToString());
-        var fullPath = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "Uploads", relativePath));
-        var uploadsRoot = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "Uploads"));
+        string relativePath;
+        try
+        {
+            relativePath = Uri.UnescapeDataString(url[uploadsPrefix.Length..]).Replace("/", Path.DirectorySeparatorChar.ToString());
+        }
+        catch (UriFormatException)
+        {
+            return;
+        }
 
-        if (fullPath.StartsWith(uploadsRoot, StringComparison.OrdinalIgnoreCase) && System.IO.File.Exists(fullPath))
+        var uploadsRoot = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "Uploads"));
+        var fullPath = Path.GetFullPath(Path.Combine(uploadsRoot, relativePath));
+        var pathFromRoot = Path.GetRelativePath(uploadsRoot, fullPath);
+
+        if (!Path.IsPathRooted(pathFromRoot)
+            && pathFromRoot != ".."
+            && !pathFromRoot.StartsWith($"..{Path.DirectorySeparatorChar}", StringComparison.Ordinal)
+            && System.IO.File.Exists(fullPath))
         {
             System.IO.File.Delete(fullPath);
         }
     }
 
+    private static async Task<bool> HasExpectedFileSignatureAsync(IFormFile file, string extension)
+    {
+        var header = new byte[12];
+        await using var stream = file.OpenReadStream();
+        var bytesRead = await stream.ReadAsync(header.AsMemory(0, header.Length));
+
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => bytesRead >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
+            ".png" => bytesRead >= 8 && header.AsSpan(0, 8).SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }),
+            ".webp" => bytesRead >= 12
+                && header.AsSpan(0, 4).SequenceEqual("RIFF"u8)
+                && header.AsSpan(8, 4).SequenceEqual("WEBP"u8),
+            ".pdf" => bytesRead >= 5 && header.AsSpan(0, 5).SequenceEqual("%PDF-"u8),
+            _ => false
+        };
+    }
+
     private static bool BooleanHasValue(string value)
     {
         return !string.IsNullOrWhiteSpace(value);
+    }
+
+    private int GetCurrentUserId()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+        return int.TryParse(id, out var parsed) ? parsed : 0;
+    }
+
+    private string GetCurrentEmail()
+    {
+        return User.FindFirstValue(ClaimTypes.Email) ?? "system";
     }
 }

@@ -3,9 +3,12 @@ using Edu4Migration.Api.Data;
 using Edu4Migration.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,7 @@ builder.Logging.AddDebug();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "DataProtectionKeys")));
 
@@ -35,10 +39,33 @@ builder.Services.AddScoped<AuditService>();
 
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+        ?? ["http://localhost:5173", "http://127.0.0.1:5173"];
+
     options.AddPolicy("Frontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod());
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("Login", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -87,6 +114,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseForwardedHeaders();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
+
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        context.Response.Headers.TryAdd("X-Content-Type-Options", "nosniff");
+        context.Response.Headers.TryAdd("Referrer-Policy", "strict-origin-when-cross-origin");
+        context.Response.Headers.TryAdd("X-Frame-Options", "DENY");
+        context.Response.Headers.TryAdd("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+        return Task.CompletedTask;
+    });
+    await next();
+});
+
 app.UseStaticFiles();
 var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "Uploads");
 Directory.CreateDirectory(uploadsPath);
@@ -96,10 +143,12 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/uploads"
 });
 app.UseCors("Frontend");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
 

@@ -1,7 +1,8 @@
 /* Homepage palette */
 
 .reference-home {
-  --accent: #e07b2e;
+  --accent: #63c3ff;
+  --accent-button: #1268ad;
   --navy: #0e1520;
   --text: #0e1520;
   --muted: #4e5d72;
@@ -30,7 +31,7 @@
 }
 
 .reference-home .btn-primary {
-  background: var(--accent);
+  background: var(--accent-button);
   color: #fff;
 }
 
@@ -68,7 +69,7 @@
   flex-direction: column;
   justify-content: flex-end;
   background-color: #0a1525;
-  background-position: center;
+  background-position: center 42%;
 }
 
 .reference-home .hero::before {
@@ -236,9 +237,9 @@
   justify-content: center;
   width: 52px;
   height: 52px;
-  color: var(--accent);
-  background: #fff0e4;
-  border: 1px solid #f6dfcc;
+  color: #1268ad;
+  background: #e8f4ff;
+  border: 1px solid #c7e5fb;
   border-radius: 14px;
   margin: 0;
 }
@@ -279,7 +280,7 @@
 }
 
 .reference-home .feature-card:hover {
-  border-color: #edc5a7;
+  border-color: #91c9ef;
   box-shadow: 0 12px 32px rgba(14, 21, 32, .08);
 }
 
@@ -316,7 +317,7 @@
 }
 
 .reference-home .news-date {
-  color: #ab5015;
+  color: #0b5f9e;
   font-size: .75rem;
   font-weight: 500;
 }
@@ -435,7 +436,7 @@
   .reference-home .hero {
     min-height: calc(100svh - 64px);
     justify-content: center;
-    background-position: 62% center;
+    background-position: 62% 42%;
   }
 
   .reference-home .hero-grid {

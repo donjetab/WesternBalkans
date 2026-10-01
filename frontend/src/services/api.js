@@ -102,8 +102,11 @@ async function publicRequest(path) {
   try {
     return await request(path, { timeout: 4000 });
   } catch (error) {
-    useLocalMedia = true;
-    return getFallback(path);
+    if (import.meta.env.DEV) {
+      useLocalMedia = true;
+      return getFallback(path);
+    }
+    throw error;
   }
 }
 

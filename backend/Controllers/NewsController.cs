@@ -25,7 +25,7 @@ public class NewsController(AppDbContext db, AuditService audit) : ControllerBas
         var query = db.NewsItems.AsQueryable();
         if (!includeDrafts)
         {
-            query = query.Where(item => item.IsPublished && item.PublishedAt <= DateTime.UtcNow.AddDays(1));
+            query = query.Where(item => item.IsPublished && item.PublishedAt <= DateTime.UtcNow);
         }
 
         var items = await query.OrderByDescending(item => item.PublishedAt).Select(item => ToDto(item)).ToListAsync();
@@ -41,7 +41,7 @@ public class NewsController(AppDbContext db, AuditService audit) : ControllerBas
             return NotFound();
         }
 
-        if ((!item.IsPublished || item.PublishedAt > DateTime.UtcNow.AddDays(1)) && User.Identity?.IsAuthenticated != true)
+        if ((!item.IsPublished || item.PublishedAt > DateTime.UtcNow) && User.Identity?.IsAuthenticated != true)
         {
             return NotFound();
         }

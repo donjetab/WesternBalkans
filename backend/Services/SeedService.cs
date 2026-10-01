@@ -6,10 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Edu4Migration.Api.Services;
 
-public class SeedService(AppDbContext db)
+public class SeedService(AppDbContext db, PasswordService passwords, IConfiguration configuration, ILogger<SeedService> logger)
 {
     public async Task SeedAsync()
     {
+        await SeedInitialAdminAsync();
+
         if (!await db.HomepageContents.AnyAsync())
         {
             db.HomepageContents.Add(new HomepageContent
@@ -74,6 +76,37 @@ public class SeedService(AppDbContext db)
         }
 
         await db.SaveChangesAsync();
+    }
+
+    private async Task SeedInitialAdminAsync()
+    {
+        if (await db.AdminUsers.AnyAsync()) return;
+
+        var email = configuration["BootstrapAdmin:Email"]?.Trim().ToLowerInvariant();
+        var password = configuration["BootstrapAdmin:Password"];
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            logger.LogWarning("No administrator exists. Set BootstrapAdmin__Email and BootstrapAdmin__Password once to provision the initial MainAdmin account.");
+            return;
+        }
+
+        if (password.Length < 12
+            || !password.Any(char.IsUpper)
+            || !password.Any(char.IsLower)
+            || !password.Any(char.IsDigit)
+            || !password.Any(character => !char.IsLetterOrDigit(character)))
+        {
+            throw new InvalidOperationException("Bootstrap administrator password must be at least 12 characters and include uppercase, lowercase, number, and special characters.");
+        }
+
+        db.AdminUsers.Add(new AdminUser
+        {
+            Email = email,
+            PasswordHash = passwords.Hash(password),
+            Role = "MainAdmin"
+        });
+        await db.SaveChangesAsync();
+        logger.LogInformation("Initial MainAdmin account provisioned for {Email}. Remove the bootstrap password from the environment now.", email);
     }
 
     private static IEnumerable<ContentPage> DefaultPages()

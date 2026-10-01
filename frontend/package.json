@@ -13,12 +13,12 @@
     "deploy:github": "npm run build:github && node scripts/publishGithub.cjs"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "lucide-react": "^0.468.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.0.0",
-    "vite": "^7.0.0"
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4",
+    "vite": "^7.3.6"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0"
